@@ -48,7 +48,7 @@ Please provide a brief summary of why your institution requires unthrottled acce
           Institutional Access Protocols
         </h1>
         <p className="font-sans text-base md:text-lg text-on-surface-variant leading-relaxed">
-          The EcoSphere Master Index is managed as a shared resource. We provide tailored subscription frameworks for universities, state departments, and accredited international agencies.
+          The EcoVeridian Master Index is managed as a shared resource. We provide tailored subscription frameworks for universities, state departments, and accredited international agencies.
         </p>
       </header>
 

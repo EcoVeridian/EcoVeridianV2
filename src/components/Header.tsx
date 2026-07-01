@@ -37,7 +37,7 @@ export default function Header({ activeTab, setActiveTab, onSignInClick, isSigne
             className="font-serif italic text-3xl md:text-4xl text-primary font-bold cursor-pointer hover:opacity-85 transition-opacity"
             id="logo-button"
           >
-            EcoSphere
+            EcoVeridian
           </button>
 
           {/* Navigation Links (Desktop) */}

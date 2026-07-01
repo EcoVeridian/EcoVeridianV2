@@ -14,10 +14,12 @@ export default function Footer({ setActiveTab }: FooterProps) {
         
         {/* Brand Description */}
         <div className="flex flex-col gap-4 max-w-sm">
-          <span className="font-serif text-display-lg-mobile text-primary font-bold italic tracking-tight">EcoSphere</span>
+          <span className="font-serif text-display-lg-mobile text-primary font-bold italic tracking-tight">EcoVeridian</span>
           <p className="font-sans text-xs text-on-surface-variant leading-relaxed uppercase tracking-wider">
-            © 2026 EcoSphere Research Institute. All rights reserved. <br/>
-            Managed by the Global Environmental Consortium.
+            © 2026 EcoVeridian. All rights reserved.
+          </p>
+          <p className="font-sans text-xs text-on-surface-variant leading-relaxed">
+            Contact: ecoveridian@gmail.com
           </p>
         </div>
 
@@ -55,11 +57,11 @@ export default function Footer({ setActiveTab }: FooterProps) {
               Consortium Policy
             </button>
             <a
-              href="mailto:librarian@ecosphere.org"
+              href="#contact"
               className="text-left text-on-surface-variant hover:text-primary hover:underline transition-all duration-300 cursor-pointer"
               id="footer-link-contact"
             >
-              Contact Librarian
+              Contact
             </a>
           </div>
         </div>

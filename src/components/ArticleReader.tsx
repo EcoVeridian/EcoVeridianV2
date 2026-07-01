@@ -44,7 +44,7 @@ export default function ArticleReader({ article, onClose }: ArticleReaderProps) 
         // Actually generate a simple text/plain file with the article contents!
         const content = `
 =========================================
-ECOSPHERE RESEARCH INSTITUTE JOURNAL
+ECOVERIDIAN REPORT
 Volume IV / Issue 09 — Grounded in Inquiry
 =========================================
 
@@ -81,7 +81,7 @@ ${article.references.map((r, i) => `[${i + 1}] ${r}`).join('\n')}
 =========================================
 OFFICIAL CITATION RECORD
 PGP Signature Verified
-EcoSphere Publication ID: ECO-${article.id}-2026
+EcoVeridian Publication ID: EV-${article.id}-2026
 =========================================
 `;
         const blob = new Blob([content], { type: 'text/plain' });

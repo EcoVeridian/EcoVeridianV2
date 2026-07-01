@@ -94,11 +94,11 @@ export default function SubmissionView() {
         ).join('').toUpperCase();
         
         const blockReceipt = `-----BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA512
+      Hash: SHA512
 
-==================================================
-ECOSPHERE INQUIRY TRANSMISSION RECEIPT
-==================================================
+      ==================================================
+      ECOVERIDIAN INQUIRY TRANSMISSION RECEIPT
+      ==================================================
 Timestamp: ${new Date().toISOString()}
 Transaction ID: TXN-${transactionHash}
 Physical Node: Geneva-CH-4
@@ -119,7 +119,7 @@ Dossier Content:
 PGP DIGITAL SIGNATURE
 --------------------------------------------------
 -----BEGIN PGP SIGNATURE-----
-Version: EcoSphere Geneva Guard 4.2
+Version: EcoVeridian Guard 1.0
 
 iQGzBAEBCgAdFiEE4F8A9B2C11D3E7F566A18C90B2D4E6F890A1B2C3F890A1B2
 C3F890A1B2C3F890A1B2C3F890A1B2C3F890A1B2C3F890A1B2C3F890A1B2C3F8
@@ -154,10 +154,10 @@ C3F890A1B2C3F890A1B2C3F890A1B2C3F890A1B2C3F890A1B2C3F890A1B2C3F8
     <div className="w-full max-w-[1280px] mx-auto px-5 md:px-16 py-12 md:py-20 animate-fade-in">
       
       {/* Header Section */}
-      <div className="max-w-[720px] mx-auto mb-16 text-center md:text-left border-b-[0.5px] border-outline-variant pb-12">
-        <h1 className="font-serif text-4xl md:text-5xl font-bold text-primary mb-6">Submission of Inquiry</h1>
+      <div className="max-w-[720px] mb-16 text-left border-b-[0.5px] border-outline-variant pb-12">
+        <h1 className="font-serif text-4xl md:text-5xl font-bold text-primary mb-6">Have questions? Contact EcoVeridian</h1>
         <p className="font-sans text-base md:text-lg text-on-surface-variant leading-relaxed">
-          Direct correspondence protocol for research inquiries, methodology requests, and institutional collaboration proposals. Please route your inquiry through the appropriate channels below.
+          Have questions? We've got answers. If you can't find what you're looking for, contact us at ecoveridian@gmail.com. Please route inquiries through the appropriate channels below.
         </p>
       </div>
 
@@ -229,12 +229,7 @@ C3F890A1B2C3F890A1B2C3F890A1B2C3F890A1B2C3F890A1B2C3F890A1B2C3F8
               <div className="space-y-6">
                 <div>
                   <p className="font-sans text-[11px] text-outline uppercase font-semibold mb-1">PRIMARY RELAY</p>
-                  <a
-                    className="font-sans text-lg text-primary font-semibold hover:underline underline-offset-4 decoration-[0.5px]"
-                    href="mailto:inquiry@ecosphere.org"
-                  >
-                    inquiry@ecosphere.org
-                  </a>
+                  <span className="font-sans text-lg text-primary font-semibold">ecoveridian@gmail.com</span>
                 </div>
                 <div>
                   <p className="font-sans text-[11px] text-outline uppercase font-semibold mb-2">PGP FINGERPRINT</p>
@@ -248,14 +243,12 @@ C3F890A1B2C3F890A1B2C3F890A1B2C3F890A1B2C3F890A1B2C3F890A1B2C3F8
             {/* Address block */}
             <section>
               <h2 className="font-mono text-xs uppercase tracking-widest text-on-surface-variant mb-6 pb-2 border-b-[0.5px] border-outline-variant font-bold">
-                Physical Node
+                Contact
               </h2>
               <address className="font-sans text-xs md:text-sm text-on-surface-variant not-italic space-y-1.5 leading-relaxed">
-                EcoSphere Research Institute<br />
-                Global Environmental Consortium<br />
-                1024 Climate Data Row, Suite 400<br />
-                Geneva, CH-1201<br />
-                Switzerland
+                EcoVeridian
+                <br />
+                Email: ecoveridian@gmail.com
               </address>
             </section>
           </div>

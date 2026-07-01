@@ -142,7 +142,7 @@ export default function MasterIndexView({ frameworks, onSelectFramework }: Maste
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = `ecosphere_${item.id.toLowerCase().replace(/-/g, '_')}_metadata.csv`;
+    link.download = `ecoveridian_${item.id.toLowerCase().replace(/-/g, '_')}_metadata.csv`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);

@@ -219,7 +219,7 @@ export const SCHOLARLY_ARTICLES: ScholarlyArticle[] = [
     id: 'ART-001',
     title: 'The Architecture of Hidden Insight',
     category: 'Special Report',
-    author: 'EcoSphere Scholarly Editorial',
+    author: 'EcoVeridian Editorial',
     readTime: '12 min',
     excerpt: 'A definitive exploration into the structural paradigms of environmental data. We catalog the invisible threads connecting terrestrial ecosystems to atmospheric phenomena, rigorously curated for the modern scholar.',
     image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuApTdxHnhHbP52I0Pgun2hjHotG1Y69uF3PLt4_F4YLfqr2WgqXpFPWXmmoal7N4qQePZqSGEqJFZlbkKKA2jqW5scw_IDr0rV1DzhsxzumE9MMvojhxbMCg4oj-1PYdkiFS-6excuSYeoUQ_93K1Bg4n-HU-CRaqlUg8gViv7asBF5HWkhEFCMMX2XdkL_RXcTBhqgg3sC5Qm6qPhqieUbzW-HuCiHml4Oq6fZ9NqaG0d5qVo5TMJQGiwGptotMZllOyWaqHHq-qg',
