@@ -4,7 +4,7 @@
  */
 
 interface FooterProps {
-  setActiveTab: (tab: 'collections' | 'journals' | 'methodology' | 'institutional' | 'team') => void;
+  setActiveTab: (tab: 'collections' | 'journals' | 'methodology' | 'institutional' | 'team' | 'about') => void;
 }
 
 export default function Footer({ setActiveTab }: FooterProps) {
@@ -42,13 +42,13 @@ export default function Footer({ setActiveTab }: FooterProps) {
             >
               Research
             </button>
-            <a
-              href="#about"
+            <button
+              onClick={() => setActiveTab('about')}
               className="text-left text-on-surface-variant hover:text-primary hover:underline transition-all duration-300 cursor-pointer"
               id="footer-link-about"
             >
               About Us
-            </a>
+            </button>
             <button
               onClick={() => setActiveTab('journals')}
               className="text-left text-on-surface-variant hover:text-primary hover:underline transition-all duration-300 cursor-pointer"

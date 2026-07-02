@@ -7,8 +7,8 @@ import { useState } from 'react';
 import { Menu, X } from 'lucide-react';
 
 interface HeaderProps {
-  activeTab: 'collections' | 'journals' | 'methodology' | 'institutional' | 'team';
-  setActiveTab: (tab: 'collections' | 'journals' | 'methodology' | 'institutional' | 'team') => void;
+  activeTab: 'collections' | 'journals' | 'methodology' | 'institutional' | 'team' | 'about';
+  setActiveTab: (tab: 'collections' | 'journals' | 'methodology' | 'institutional' | 'team' | 'about') => void;
 }
 
 export default function Header({ activeTab, setActiveTab }: HeaderProps) {

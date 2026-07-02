@@ -13,12 +13,13 @@ import FrameworkDrawer from './components/FrameworkDrawer';
 import SubmissionView from './components/SubmissionView';
 import InstitutionalAccessView from './components/InstitutionalAccessView';
 import TeamView from './components/TeamView';
+import AboutView from './components/AboutView';
 
 import { ENVIRONMENTAL_FRAMEWORKS, SCHOLARLY_ARTICLES } from './data';
 import { ScholarlyArticle, EnvironmentalFramework } from './types';
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState<'collections' | 'journals' | 'methodology' | 'institutional' | 'team'>('collections');
+  const [activeTab, setActiveTab] = useState<'collections' | 'journals' | 'methodology' | 'institutional' | 'team' | 'about'>('collections');
   const [selectedArticle, setSelectedArticle] = useState<ScholarlyArticle | null>(null);
   const [selectedFramework, setSelectedFramework] = useState<EnvironmentalFramework | null>(null);
 
@@ -75,6 +76,10 @@ export default function App() {
 
             {activeTab === 'team' && (
               <TeamView />
+            )}
+
+            {activeTab === 'about' && (
+              <AboutView />
             )}
           </>
         )}
