@@ -58,6 +58,13 @@ export default function Footer({ setActiveTab }: FooterProps) {
             >
               Resource Hub
             </button>
+            <button
+              onClick={() => setActiveTab('team')}
+              className="text-left text-on-surface-variant hover:text-primary hover:underline transition-all duration-300 cursor-pointer"
+              id="footer-link-team"
+            >
+              Team
+            </button>
           </div>
           <div className="flex flex-col gap-3">
             <button
@@ -67,13 +74,15 @@ export default function Footer({ setActiveTab }: FooterProps) {
             >
               Partner With Us
             </button>
-            <button
-              onClick={() => setActiveTab('team')}
+            <a
+              href="https://www.instagram.com/ecoveridian"
+              target="_blank"
+              rel="noreferrer"
               className="text-left text-on-surface-variant hover:text-primary hover:underline transition-all duration-300 cursor-pointer"
-              id="footer-link-team"
+              id="footer-link-instagram"
             >
-              Team
-            </button>
+              Instagram
+            </a>
             <a
               href="https://github.com/EcoVeridian"
               target="_blank"
