@@ -29,39 +29,57 @@ export default function Footer({ setActiveTab }: FooterProps) {
             <button
               onClick={() => setActiveTab('collections')}
               className="text-left text-on-surface-variant hover:text-primary hover:underline transition-all duration-300 cursor-pointer"
-              id="footer-link-collections"
+              id="footer-link-research"
             >
-              Curated Collections
+              Research
             </button>
+            <a
+              href="#about"
+              className="text-left text-on-surface-variant hover:text-primary hover:underline transition-all duration-300 cursor-pointer"
+              id="footer-link-about"
+            >
+              About Us
+            </a>
             <button
               onClick={() => setActiveTab('journals')}
               className="text-left text-on-surface-variant hover:text-primary hover:underline transition-all duration-300 cursor-pointer"
-              id="footer-link-index"
+              id="footer-link-resource-hub"
             >
-              Master Framework Index
-            </button>
-            <button
-              onClick={() => setActiveTab('methodology')}
-              className="text-left text-on-surface-variant hover:text-primary hover:underline transition-all duration-300 cursor-pointer"
-              id="footer-link-methodology"
-            >
-              Submission Protocol
+              Resource Hub
             </button>
           </div>
           <div className="flex flex-col gap-3">
             <button
-              onClick={() => setActiveTab('institutional')}
+              onClick={() => setActiveTab('methodology')}
               className="text-left text-on-surface-variant hover:text-primary hover:underline transition-all duration-300 cursor-pointer"
-              id="footer-link-access"
+              id="footer-link-partner"
             >
-              Consortium Policy
+              Partner With Us
+            </button>
+            <button
+              onClick={() => setActiveTab('collections')}
+              className="text-left text-on-surface-variant hover:text-primary hover:underline transition-all duration-300 cursor-pointer"
+              id="footer-link-team"
+            >
+              Team
             </button>
             <a
-              href="#contact"
+              href="https://github.com/"
+              target="_blank"
+              rel="noreferrer"
               className="text-left text-on-surface-variant hover:text-primary hover:underline transition-all duration-300 cursor-pointer"
-              id="footer-link-contact"
+              id="footer-link-github"
             >
-              Contact
+              GitHub
+            </a>
+            <a
+              href="https://www.linkedin.com/"
+              target="_blank"
+              rel="noreferrer"
+              className="text-left text-on-surface-variant hover:text-primary hover:underline transition-all duration-300 cursor-pointer"
+              id="footer-link-linkedin"
+            >
+              LinkedIn
             </a>
           </div>
         </div>

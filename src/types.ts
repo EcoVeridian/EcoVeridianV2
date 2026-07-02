@@ -6,8 +6,8 @@
 export interface EnvironmentalFramework {
   id: string;
   title: string;
-  discipline: 'Ecology & Conservation' | 'Climatology Models' | 'Hydrological Systems' | 'Soil Biogeochemistry';
-  domain: 'Terrestrial' | 'Marine / Oceanic' | 'Atmospheric';
+  discipline: 'Tourism Forecasting' | 'Environmental Data Analysis' | 'Sustainability Metrics' | 'Machine Learning Models';
+  domain: 'Written Report' | 'Dataset Summary' | 'Code / Notebook';
   format: string;
   size: string;
   lastUpdated: string;
@@ -21,7 +21,7 @@ export interface EnvironmentalFramework {
 export interface ScholarlyArticle {
   id: string;
   title: string;
-  category: 'Thesis' | 'Methodology' | 'Field Notes' | 'Special Report';
+  category: 'Flagship Project' | 'Case Study' | 'Methodology' | 'Team Update';
   author: string;
   readTime: string;
   excerpt: string;

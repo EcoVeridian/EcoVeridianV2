@@ -108,20 +108,20 @@ export default function FrameworkDrawer({ framework, onClose }: FrameworkDrawerP
 
           {/* Metadata Section */}
           <h3 className="font-mono text-xs uppercase tracking-widest text-outline mb-4 font-bold">
-            Taxonomic Specifications
+            Resource Details
           </h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
             <div className="flex gap-3 items-center text-xs">
               <Layers className="w-4 h-4 text-secondary flex-shrink-0" />
               <div>
-                <p className="font-mono text-outline uppercase text-[10px]">Discipline</p>
+                <p className="font-mono text-outline uppercase text-[10px]">Topic Tag</p>
                 <p className="font-sans text-on-surface font-semibold">{framework.discipline}</p>
               </div>
             </div>
             <div className="flex gap-3 items-center text-xs">
               <Database className="w-4 h-4 text-secondary flex-shrink-0" />
               <div>
-                <p className="font-mono text-outline uppercase text-[10px]">Domain Focus</p>
+                <p className="font-mono text-outline uppercase text-[10px]">Resource Type</p>
                 <p className="font-sans text-on-surface font-semibold">{framework.domain}</p>
               </div>
             </div>

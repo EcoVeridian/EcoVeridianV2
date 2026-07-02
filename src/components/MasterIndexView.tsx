@@ -18,17 +18,17 @@ export default function MasterIndexView({ frameworks, onSelectFramework }: Maste
   
   // Discipline multi-select state
   const [disciplines, setDisciplines] = useState<Record<string, boolean>>({
-    'Ecology & Conservation': false,
-    'Climatology Models': true, // default checked in mockup image
-    'Hydrological Systems': false,
-    'Soil Biogeochemistry': false,
+    'Tourism Forecasting': false,
+    'Environmental Data Analysis': false,
+    'Sustainability Metrics': false,
+    'Machine Learning Models': false,
   });
 
   // Domain Focus multi-select state
   const [domains, setDomains] = useState<Record<string, boolean>>({
-    'Terrestrial': false,
-    'Marine / Oceanic': false,
-    'Atmospheric': false,
+    'Written Report': false,
+    'Dataset Summary': false,
+    'Code / Notebook': false,
   });
 
   // Pagination states
@@ -69,7 +69,7 @@ export default function MasterIndexView({ frameworks, onSelectFramework }: Maste
   // Filter logic
   const filteredFrameworks = useMemo(() => {
     return frameworks.filter((item) => {
-      // 1. Search Query Check (matches ID, title, coverage, or description)
+      // 1. Search query check (matches ID, title, coverage, or description)
       const q = appliedFilters.searchQuery.toLowerCase();
       const matchesSearch =
         item.title.toLowerCase().includes(q) ||
@@ -79,8 +79,7 @@ export default function MasterIndexView({ frameworks, onSelectFramework }: Maste
 
       if (!matchesSearch) return false;
 
-      // 2. Discipline Filter check
-      // If none are checked, we treat it as "allow all". Otherwise, match checked items.
+      // 2. Topic tag filter check
       const activeDisciplines = Object.entries(appliedFilters.disciplines)
         .filter(([_, checked]) => checked)
         .map(([name]) => name);
@@ -89,7 +88,7 @@ export default function MasterIndexView({ frameworks, onSelectFramework }: Maste
         return false;
       }
 
-      // 3. Domain Filter check
+      // 3. Format filter check
       const activeDomains = Object.entries(appliedFilters.domains)
         .filter(([_, checked]) => checked)
         .map(([name]) => name);
@@ -142,7 +141,7 @@ export default function MasterIndexView({ frameworks, onSelectFramework }: Maste
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = `ecoveridian_${item.id.toLowerCase().replace(/-/g, '_')}_metadata.csv`;
+    link.download = `ecoveridian_${item.id.toLowerCase().replace(/-/g, '_')}_resource_metadata.csv`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -157,21 +156,21 @@ export default function MasterIndexView({ frameworks, onSelectFramework }: Maste
         <div className="sticky top-[100px] flex flex-col gap-8">
           
           <div className="border-b-[0.5px] border-outline pb-4 flex items-center justify-between">
-            <h2 className="font-serif text-2xl font-semibold text-primary">Taxonomy</h2>
+            <h2 className="font-serif text-2xl font-semibold text-primary">Filters</h2>
             <SlidersHorizontal className="w-4 h-4 text-outline" />
           </div>
 
-          {/* Filter Group: Discipline */}
+          {/* Filter Group: Topic Tags */}
           <div>
             <h3 className="font-mono text-xs text-on-surface-variant font-bold uppercase tracking-widest mb-4">
-              Discipline
+              Topic Tags
             </h3>
             <ul className="space-y-3 font-sans text-sm">
               {[
-                { name: 'Ecology & Conservation', count: 142 },
-                { name: 'Climatology Models', count: 89 },
-                { name: 'Hydrological Systems', count: 214 },
-                { name: 'Soil Biogeochemistry', count: 67 },
+                { name: 'Tourism Forecasting', count: 1 },
+                { name: 'Environmental Data Analysis', count: 1 },
+                { name: 'Sustainability Metrics', count: 1 },
+                { name: 'Machine Learning Models', count: 1 },
               ].map((disc) => (
                 <li key={disc.name}>
                   <label className="flex items-center gap-3 cursor-pointer group select-none">
@@ -199,13 +198,13 @@ export default function MasterIndexView({ frameworks, onSelectFramework }: Maste
             </ul>
           </div>
 
-          {/* Filter Group: Domain Focus */}
+          {/* Filter Group: Format */}
           <div>
             <h3 className="font-mono text-xs text-on-surface-variant font-bold uppercase tracking-widest mb-4">
-              Domain Focus
+              Format
             </h3>
             <ul className="space-y-3 font-sans text-sm">
-              {['Terrestrial', 'Marine / Oceanic', 'Atmospheric'].map((domainName) => (
+              {['Written Report', 'Dataset Summary', 'Code / Notebook'].map((domainName) => (
                 <li key={domainName}>
                   <label className="flex items-center gap-3 cursor-pointer group select-none">
                     <input
@@ -248,28 +247,28 @@ export default function MasterIndexView({ frameworks, onSelectFramework }: Maste
             <button
               onClick={() => {
                 setDisciplines({
-                  'Ecology & Conservation': false,
-                  'Climatology Models': false,
-                  'Hydrological Systems': false,
-                  'Soil Biogeochemistry': false,
+                  'Tourism Forecasting': false,
+                  'Environmental Data Analysis': false,
+                  'Sustainability Metrics': false,
+                  'Machine Learning Models': false,
                 });
                 setDomains({
-                  'Terrestrial': false,
-                  'Marine / Oceanic': false,
-                  'Atmospheric': false,
+                  'Written Report': false,
+                  'Dataset Summary': false,
+                  'Code / Notebook': false,
                 });
                 setSearchQuery('');
                 setAppliedFilters({
                   disciplines: {
-                    'Ecology & Conservation': false,
-                    'Climatology Models': false,
-                    'Hydrological Systems': false,
-                    'Soil Biogeochemistry': false,
+                    'Tourism Forecasting': false,
+                    'Environmental Data Analysis': false,
+                    'Sustainability Metrics': false,
+                    'Machine Learning Models': false,
                   },
                   domains: {
-                    'Terrestrial': false,
-                    'Marine / Oceanic': false,
-                    'Atmospheric': false,
+                    'Written Report': false,
+                    'Dataset Summary': false,
+                    'Code / Notebook': false,
                   },
                   searchQuery: '',
                 });
@@ -290,10 +289,10 @@ export default function MasterIndexView({ frameworks, onSelectFramework }: Maste
         {/* Header Block */}
         <header className="mb-10">
           <h1 className="font-serif text-3xl md:text-4xl lg:text-5xl text-primary font-bold mb-4 leading-tight">
-            Master Index of Environmental Frameworks
+            Resource Hub
           </h1>
           <p className="font-sans text-base md:text-lg text-on-surface-variant max-w-3xl leading-relaxed">
-            A comprehensive repository of validated datasets, standardized methodologies, and analytical models for global environmental assessment. Version 4.2.1.
+            Browse our verified research outputs, dataset summaries, and reproducible methods. This page is structured to scale as EcoVeridian publishes more partner-ready work.
           </p>
         </header>
 
@@ -306,7 +305,7 @@ export default function MasterIndexView({ frameworks, onSelectFramework }: Maste
             onKeyDown={(e) => {
               if (e.key === 'Enter') handleApplyFilters();
             }}
-            placeholder="Search indexing keywords (e.g., carbon, boreal, Kolyma)..."
+            placeholder="Search projects and resources (e.g., Yellowstone, forecast, notebook)..."
             className="w-full pl-10 pr-20 py-2.5 bg-surface-container-lowest border-[0.5px] border-outline text-sm font-sans focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary rounded-xs"
             id="search-index-input"
           />
@@ -322,7 +321,7 @@ export default function MasterIndexView({ frameworks, onSelectFramework }: Maste
 
         {/* Table Header Row (Desktop Layout) */}
         <div className="hidden md:flex flex-row items-center justify-between pb-3.5 border-b-[0.5px] border-primary font-mono text-xs text-primary font-bold uppercase tracking-widest px-2">
-          <div className="flex-1">Resource Nomenclature & Title</div>
+          <div className="flex-1">Project Code, Status, and Title</div>
           <div className="flex gap-12 w-1/2 justify-end pr-4">
             <span className="w-20 text-right">Format</span>
             <span className="w-20 text-right">Size</span>

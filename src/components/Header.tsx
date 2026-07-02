@@ -4,23 +4,21 @@
  */
 
 import { useState } from 'react';
-import { Library, Globe, Menu, X, Landmark, Award } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 
 interface HeaderProps {
   activeTab: 'collections' | 'journals' | 'methodology' | 'institutional';
   setActiveTab: (tab: 'collections' | 'journals' | 'methodology' | 'institutional') => void;
-  onSignInClick: () => void;
-  isSignedIn: boolean;
 }
 
-export default function Header({ activeTab, setActiveTab, onSignInClick, isSignedIn }: HeaderProps) {
+export default function Header({ activeTab, setActiveTab }: HeaderProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const navigationItems = [
-    { id: 'collections', label: 'Collections' },
-    { id: 'journals', label: 'Journals / Index' },
-    { id: 'methodology', label: 'Methodology / Inquiry' },
-    { id: 'institutional', label: 'Institutional Access' },
+    { id: 'collections', label: 'Research' },
+    { id: 'journals', label: 'Resource Hub' },
+    { id: 'methodology', label: 'Partner With Us' },
+    { id: 'institutional', label: 'Ways to Work With Us' },
   ] as const;
 
   return (
@@ -61,36 +59,14 @@ export default function Header({ activeTab, setActiveTab, onSignInClick, isSigne
 
         {/* Actions Menu */}
         <div className="flex items-center gap-4 md:gap-6">
-          
-          {/* Quick Stats icons or structural depth */}
-          <div className="flex items-center gap-4 text-primary">
-            <button 
-              title="Consortium Nodes"
-              className="p-1 hover:text-secondary hover:bg-surface-container-low rounded transition-all cursor-pointer"
-              id="header-node-btn"
-            >
-              <Landmark className="w-5 h-5 stroke-[1.5]" />
-            </button>
-            <button 
-              title="Regional Protocols"
-              className="p-1 hover:text-secondary hover:bg-surface-container-low rounded transition-all cursor-pointer"
-              id="header-lang-btn"
-            >
-              <Globe className="w-5 h-5 stroke-[1.5]" />
-            </button>
-          </div>
 
-          {/* Sign In Trigger */}
+          {/* Primary quick action */}
           <button
-            onClick={onSignInClick}
-            className={`px-4 md:px-6 py-2 text-sm font-sans font-semibold rounded-[2px] transition-all duration-200 border cursor-pointer ${
-              isSignedIn
-                ? 'bg-surface border-outline-variant text-primary hover:bg-surface-container-low'
-                : 'bg-primary border-primary text-on-primary hover:bg-primary-container'
-            }`}
-            id="header-signin-btn"
+            onClick={() => setActiveTab('methodology')}
+            className="px-4 md:px-6 py-2 text-sm font-sans font-semibold rounded-[2px] transition-all duration-200 border cursor-pointer bg-primary border-primary text-on-primary hover:bg-primary-container"
+            id="header-contact-btn"
           >
-            {isSignedIn ? 'Scholar Profile' : 'Sign In'}
+            Contact Us
           </button>
 
           {/* Mobile Menu Icon */}

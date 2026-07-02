@@ -22,11 +22,10 @@ export default function ArticleReader({ article, onClose }: ArticleReaderProps) 
     setDownloading(true);
     setDownloadFinished(false);
     const steps = [
-      'Establishing connection with Geneva publication server...',
-      'Compiling TeX source files with editorial templates...',
-      'Embedding high-resolution figure vector arrays...',
-      'Generating cryptographic citation metadata (PGP Signed)...',
-      'Finalizing environmental footprint offset check...',
+      'Preparing report package...',
+      'Compiling article sections and figures...',
+      'Generating metadata and references...',
+      'Finalizing download file...',
     ];
 
     let currentStep = 0;
@@ -80,7 +79,7 @@ ${article.references.map((r, i) => `[${i + 1}] ${r}`).join('\n')}
 
 =========================================
 OFFICIAL CITATION RECORD
-PGP Signature Verified
+EcoVeridian Reference Copy
 EcoVeridian Publication ID: EV-${article.id}-2026
 =========================================
 `;
@@ -143,7 +142,7 @@ EcoVeridian Publication ID: EV-${article.id}-2026
           <div className="flex items-center gap-4 text-xs font-mono uppercase tracking-wider text-outline">
             <span>Read Time: {article.readTime}</span>
             <span>•</span>
-            <span>Consortium Certified</span>
+            <span>Team Verified</span>
           </div>
         </div>
       </div>
@@ -315,10 +314,10 @@ EcoVeridian Publication ID: EV-${article.id}-2026
               <Award className="w-10 h-10 text-secondary stroke-[1.5]" />
               <div>
                 <p className="font-mono text-xs uppercase tracking-widest text-primary font-bold">
-                  Consortium Peer Certified
+                  EcoVeridian Reviewed
                 </p>
                 <p className="font-sans text-xs text-on-surface-variant">
-                  This work has undergone double-blind peer verification under Geneva Protocol III.
+                  This work has been reviewed internally for clarity and reproducibility.
                 </p>
               </div>
             </div>
