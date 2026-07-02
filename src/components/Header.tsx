@@ -32,9 +32,10 @@ export default function Header({ activeTab, setActiveTab }: HeaderProps) {
               setActiveTab('collections');
               setMobileMenuOpen(false);
             }}
-            className="font-serif italic text-3xl md:text-4xl text-primary font-bold cursor-pointer hover:opacity-85 transition-opacity"
+            className="flex items-center gap-2.5 font-serif italic text-3xl md:text-4xl text-primary font-bold cursor-pointer hover:opacity-85 transition-opacity"
             id="logo-button"
           >
+            <img src="/favicon.svg" alt="EcoVeridian logo" className="w-8 h-8 md:w-9 md:h-9 flex-shrink-0" />
             EcoVeridian
           </button>
 
@@ -63,7 +64,7 @@ export default function Header({ activeTab, setActiveTab }: HeaderProps) {
           {/* Primary quick action */}
           <button
             onClick={() => setActiveTab('methodology')}
-            className="px-4 md:px-6 py-2 text-sm font-sans font-semibold rounded-[2px] transition-all duration-200 border cursor-pointer bg-primary border-primary text-on-primary hover:bg-primary-container"
+            className="px-4 md:px-6 py-2 text-sm font-sans font-semibold rounded-[2px] transition-all duration-200 border cursor-pointer bg-primary border-primary text-on-primary hover:bg-primary-container hover:text-on-primary"
             id="header-contact-btn"
           >
             Contact Us

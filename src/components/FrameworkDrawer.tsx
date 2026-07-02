@@ -185,7 +185,7 @@ export default function FrameworkDrawer({ framework, onClose }: FrameworkDrawerP
           <button
             onClick={handleDownload}
             disabled={downloading}
-            className="w-full py-3 bg-primary text-on-primary hover:bg-primary-container font-mono text-xs uppercase tracking-widest flex items-center justify-center gap-3 rounded-[2px] transition-colors cursor-pointer disabled:opacity-60"
+            className="w-full py-3 bg-primary text-on-primary hover:bg-primary-container hover:text-on-primary font-mono text-xs uppercase tracking-widest flex items-center justify-center gap-3 rounded-[2px] transition-colors cursor-pointer disabled:opacity-60"
             id="drawer-download-btn"
           >
             {downloading ? (

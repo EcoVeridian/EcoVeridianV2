@@ -283,7 +283,7 @@ Thanks for reaching out. We typically respond within a few days.`;
                   <div className="pt-6 border-t-[0.5px] border-outline-variant flex justify-end">
                     <button
                       type="submit"
-                      className="bg-primary hover:bg-primary-container text-on-primary font-mono text-xs uppercase tracking-widest font-semibold py-3 px-8 rounded-[2px] transition-colors flex items-center gap-3 cursor-pointer"
+                      className="bg-primary hover:bg-primary-container hover:text-on-primary text-on-primary font-mono text-xs uppercase tracking-widest font-semibold py-3 px-8 rounded-[2px] transition-colors flex items-center gap-3 cursor-pointer"
                       id="submit-dossier-btn"
                     >
                       Send Inquiry

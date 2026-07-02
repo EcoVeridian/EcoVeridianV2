@@ -21,6 +21,9 @@ export default function Footer({ setActiveTab }: FooterProps) {
           <p className="font-sans text-xs text-on-surface-variant leading-relaxed">
             Contact: ecoveridian@gmail.com
           </p>
+          <p className="font-sans text-xs text-on-surface-variant leading-relaxed">
+            Institute for Environmental Analysis &amp; Research
+          </p>
         </div>
 
         {/* Directory Links */}

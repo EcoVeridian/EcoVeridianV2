@@ -3,6 +3,7 @@
 
 @theme {
   --color-primary: #002d1d;
+  --color-on-primary: #fcf9f8;
   --color-primary-container: #1a4332;
   --color-on-primary-container: #85af99;
   --color-background: #fcf9f8;

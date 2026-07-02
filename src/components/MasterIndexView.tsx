@@ -312,7 +312,7 @@ export default function MasterIndexView({ frameworks, onSelectFramework }: Maste
           <Search className="w-4 h-4 text-outline absolute left-3 top-3.5" />
           <button
             onClick={handleApplyFilters}
-            className="absolute right-2 top-2 px-3 py-1 bg-primary text-on-primary font-mono text-[10px] uppercase font-bold tracking-wider hover:bg-primary-container rounded-xs transition-colors cursor-pointer"
+            className="absolute right-2 top-2 px-3 py-1 bg-primary text-on-primary font-mono text-[10px] uppercase font-bold tracking-wider hover:bg-primary-container hover:text-on-primary rounded-xs transition-colors cursor-pointer"
             id="search-index-btn"
           >
             Search

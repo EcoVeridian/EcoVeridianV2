@@ -173,7 +173,7 @@ EcoVeridian Publication ID: EV-${article.id}-2026
             <button
               onClick={simulatePDFDownload}
               disabled={downloading}
-              className="w-full py-3 bg-primary text-on-primary font-mono text-xs uppercase tracking-widest hover:bg-primary-container transition-all flex items-center justify-center gap-3 cursor-pointer disabled:opacity-50"
+              className="w-full py-3 bg-primary text-on-primary font-mono text-xs uppercase tracking-widest hover:bg-primary-container hover:text-on-primary transition-all flex items-center justify-center gap-3 cursor-pointer disabled:opacity-50"
               id="download-citation-btn"
             >
               {downloading ? (

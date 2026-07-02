@@ -46,7 +46,7 @@ export default function EditorialView({ articles, onSelectArticle }: EditorialVi
           <div className="md:col-span-4 flex md:justify-end pb-2">
             <button
               onClick={() => onSelectArticle(mainHeroArticle)}
-              className="px-6 py-3.5 bg-primary text-on-primary font-mono text-xs uppercase tracking-widest font-semibold rounded-[2px] hover:bg-primary-container hover:text-on-primary-container transition-colors cursor-pointer"
+              className="px-6 py-3.5 bg-primary text-on-primary font-mono text-xs uppercase tracking-widest font-semibold rounded-[2px] hover:bg-primary-container hover:text-on-primary transition-colors cursor-pointer"
               id="hero-explore-btn"
             >
               Read The Research

@@ -76,7 +76,7 @@ export default function InstitutionalAccessView({ onGoToPartnerWithUs }: Institu
 
           {/* Tier 2 */}
           <div className="border-[0.5px] border-primary/20 p-6 bg-primary-container/5 hover:bg-primary-container/10 transition-colors duration-200 rounded-[2px] relative">
-            <div className="absolute top-4 right-4 bg-primary text-on-primary font-mono text-[9px] uppercase font-bold tracking-widest px-2 py-0.5 rounded-sm">
+            <div className="absolute top-4 right-4 bg-primary text-white font-mono text-[9px] uppercase font-bold tracking-widest px-2 py-0.5 rounded-sm">
               Deeper Engagement
             </div>
             <Award className="w-8 h-8 text-primary mb-4 stroke-[1.5]" />
