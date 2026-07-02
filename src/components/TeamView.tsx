@@ -20,8 +20,8 @@ const TEAM_MEMBERS = [
     blurb:
       'Designs and optimizes the platform\'s visual layer. Oversees interface architecture, component engineering, and end-to-end frontend performance.',
     links: [
-      { label: 'LinkedIn', href: 'https://www.linkedin.com/in/santhosh-ilaiyaraja' },
-      { label: 'Email', href: 'mailto:santhoshilaiyaraja@gmail.com' },
+      { label: 'LinkedIn', href: 'https://www.linkedin.com/in/santhosh-ilaiyaraja-77871436a/' },
+      { label: 'Email', href: 'mailto:santhosh.ilaiyaraja21@gmail.com' },
     ],
   },
   {
