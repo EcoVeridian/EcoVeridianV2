@@ -5,7 +5,12 @@
 
 import React, { useState } from 'react';
 import { InquiryFormState } from '../types';
-import { Send, Info, Loader2 } from 'lucide-react';
+import { Send, Info, Loader2, AlertTriangle } from 'lucide-react';
+
+// Destination inbox for partner inquiries. Delivered via FormSubmit
+// (https://formsubmit.co), which relays form submissions to this address
+// without requiring a backend server or API key.
+const INQUIRY_EMAIL = 'ecoveridian@gmail.com';
 
 export default function SubmissionView() {
   const [form, setForm] = useState<InquiryFormState>({
@@ -18,6 +23,7 @@ export default function SubmissionView() {
 
   const [submitting, setSubmitting] = useState(false);
   const [submitStep, setSubmitStep] = useState('');
+  const [submitError, setSubmitError] = useState<string | null>(null);
   const [receipt, setReceipt] = useState<string | null>(null);
 
   const handleInputChange = (
@@ -27,31 +33,46 @@ export default function SubmissionView() {
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleFormSubmit = (e: React.FormEvent) => {
+  const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitting(true);
-    
-    const steps = [
-      'Reviewing your inquiry details...',
-      'Routing request to the EcoVeridian team...',
-      'Preparing confirmation receipt...',
-    ];
+    setSubmitError(null);
+    setSubmitStep('Reviewing your inquiry details...');
 
-    let currentStep = 0;
-    setSubmitStep(steps[0]);
+    const stepTimer = setTimeout(() => {
+      setSubmitStep('Routing request to the EcoVeridian team...');
+    }, 600);
 
-    const interval = setInterval(() => {
-      currentStep++;
-      if (currentStep < steps.length) {
-        setSubmitStep(steps[currentStep]);
-      } else {
-        clearInterval(interval);
-        setSubmitting(false);
+    try {
+      const response = await fetch(`https://formsubmit.co/ajax/${INQUIRY_EMAIL}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+        body: JSON.stringify({
+          name: form.investigatorName,
+          organization: form.institution || 'Not provided',
+          email: form.returnRelay,
+          inquiry_type: form.classification,
+          message: form.dossier,
+          _subject: `New Partner Inquiry: ${form.investigatorName} (${form.classification})`,
+          _replyto: form.returnRelay,
+          _template: 'table',
+        }),
+      });
 
-        const transactionHash = Array.from({ length: 32 }, () =>
-          Math.floor(Math.random() * 16).toString(16)
-        ).join('').toUpperCase();
-        const blockReceipt = `EcoVeridian Inquiry Receipt
+      setSubmitStep('Preparing confirmation receipt...');
+
+      const data = await response.json().catch(() => null);
+      if (!response.ok || !data || (data.success !== 'true' && data.success !== true)) {
+        throw new Error('Delivery failed');
+      }
+
+      const transactionHash = Array.from({ length: 32 }, () =>
+        Math.floor(Math.random() * 16).toString(16)
+      ).join('').toUpperCase();
+      const blockReceipt = `EcoVeridian Inquiry Receipt
 Reference: EV-${transactionHash}
 Submitted: ${new Date().toLocaleString()}
 
@@ -65,9 +86,15 @@ Message preview:
 
 Thanks for reaching out. We typically respond within a few days.`;
 
-        setReceipt(blockReceipt);
-      }
-    }, 1000);
+      setReceipt(blockReceipt);
+    } catch {
+      setSubmitError(
+        `We could not send your inquiry right now. Please try again, or email us directly at ${INQUIRY_EMAIL}.`
+      );
+    } finally {
+      clearTimeout(stepTimer);
+      setSubmitting(false);
+    }
   };
 
   const handleResetForm = () => {
@@ -78,6 +105,7 @@ Thanks for reaching out. We typically respond within a few days.`;
       classification: '',
       dossier: '',
     });
+    setSubmitError(null);
     setReceipt(null);
   };
 
@@ -278,6 +306,14 @@ Thanks for reaching out. We typically respond within a few days.`;
                       className="bg-transparent border-b-[0.5px] border-outline focus:outline-none focus:border-primary focus:bg-surface-container-low transition-all py-2 text-sm font-sans resize-y min-h-[120px] w-full"
                     />
                   </div>
+
+                  {/* Submit error message */}
+                  {submitError && (
+                    <div className="flex items-start gap-3 bg-error-container/20 border-[0.5px] border-error/40 text-error p-4 rounded-[2px] text-sm font-sans">
+                      <AlertTriangle className="w-4 h-4 mt-0.5 shrink-0" />
+                      <span>{submitError}</span>
+                    </div>
+                  )}
 
                   {/* Submit Button block */}
                   <div className="pt-6 border-t-[0.5px] border-outline-variant flex justify-end">
