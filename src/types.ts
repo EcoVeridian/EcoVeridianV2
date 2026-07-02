@@ -6,7 +6,7 @@
 export interface EnvironmentalFramework {
   id: string;
   title: string;
-  discipline: 'Tourism Forecasting' | 'Environmental Data Analysis' | 'Sustainability Metrics' | 'Machine Learning Models';
+  discipline: 'Tourism Forecasting' | 'Environmental Data Analysis' | 'Sustainability Metrics' | 'Machine Learning Models' | 'Engineering Design Challenge';
   domain: 'Written Report' | 'Dataset Summary' | 'Code / Notebook';
   format: string;
   size: string;

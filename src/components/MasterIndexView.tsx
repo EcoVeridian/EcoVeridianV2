@@ -22,6 +22,7 @@ export default function MasterIndexView({ frameworks, onSelectFramework }: Maste
     'Environmental Data Analysis': false,
     'Sustainability Metrics': false,
     'Machine Learning Models': false,
+    'Engineering Design Challenge': false,
   });
 
   // Domain Focus multi-select state
@@ -171,6 +172,7 @@ export default function MasterIndexView({ frameworks, onSelectFramework }: Maste
                 { name: 'Environmental Data Analysis', count: 1 },
                 { name: 'Sustainability Metrics', count: 1 },
                 { name: 'Machine Learning Models', count: 1 },
+                { name: 'Engineering Design Challenge', count: 1 },
               ].map((disc) => (
                 <li key={disc.name}>
                   <label className="flex items-center gap-3 cursor-pointer group select-none">
@@ -251,6 +253,7 @@ export default function MasterIndexView({ frameworks, onSelectFramework }: Maste
                   'Environmental Data Analysis': false,
                   'Sustainability Metrics': false,
                   'Machine Learning Models': false,
+                  'Engineering Design Challenge': false,
                 });
                 setDomains({
                   'Written Report': false,
@@ -264,6 +267,7 @@ export default function MasterIndexView({ frameworks, onSelectFramework }: Maste
                     'Environmental Data Analysis': false,
                     'Sustainability Metrics': false,
                     'Machine Learning Models': false,
+                    'Engineering Design Challenge': false,
                   },
                   domains: {
                     'Written Report': false,

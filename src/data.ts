@@ -26,6 +26,27 @@ export const ENVIRONMENTAL_FRAMEWORKS: EnvironmentalFramework[] = [
     ]
   },
   {
+    id: 'EV-ENG-2026-05',
+    title: 'TerraScan: NASA "Dream with Us" UAS Pest-Detection Engineering Notebook',
+    discipline: 'Engineering Design Challenge',
+    domain: 'Written Report',
+    format: 'PDF',
+    size: '9.1 MB',
+    lastUpdated: '2026-01-23',
+    status: 'Verified',
+    description: 'Full engineering notebook submitted to NASA\'s Dream with Us High School Engineering Design Challenge: a fixed-wing UAS ("TerraScan") that autonomously surveys Washington apple orchards for codling moth damage via onboard RGB imaging and collects physical fruit samples with a motorized gripper for lab confirmation. Includes systems engineering process, weight/power/CG analysis, C3 and detect-and-avoid architecture, benchmark mission energy budget, safety case, and business/economic impact analysis.',
+    coverage: 'Washington apple orchards (King County, incl. Bothell/Glacier Peak) and Yakima-region context',
+    frequency: 'Single design-challenge submission (Nov 2025 - Jan 2026 cycle)',
+    sampleData: [
+      { Metric: 'Wingspan', Value: '1.57 m', Category: 'Air Vehicle' },
+      { Metric: 'Endurance per flight', Value: '30-35 min', Category: 'Air Vehicle' },
+      { Metric: 'Gross weight', Value: '5,460 g', Category: 'Air Vehicle' },
+      { Metric: 'Telemetry link margin', Value: '33 dB (2.5 km req.)', Category: 'C3 / Safety' },
+      { Metric: 'System cost', Value: '$2,755 (~$6,200 fielded)', Category: 'Business Case' },
+      { Metric: 'Cost per mission', Value: '$169', Category: 'Business Case' }
+    ]
+  },
+  {
     id: 'EV-DATA-2026-02',
     title: 'National Parks Dataset Summary & Feature Dictionary',
     discipline: 'Environmental Data Analysis',
