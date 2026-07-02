@@ -4,7 +4,7 @@
  */
 
 interface FooterProps {
-  setActiveTab: (tab: 'collections' | 'journals' | 'methodology' | 'institutional') => void;
+  setActiveTab: (tab: 'collections' | 'journals' | 'methodology' | 'institutional' | 'team') => void;
 }
 
 export default function Footer({ setActiveTab }: FooterProps) {
@@ -18,9 +18,12 @@ export default function Footer({ setActiveTab }: FooterProps) {
           <p className="font-sans text-xs text-on-surface-variant leading-relaxed uppercase tracking-wider">
             © 2026 EcoVeridian. All rights reserved.
           </p>
-          <p className="font-sans text-xs text-on-surface-variant leading-relaxed">
+          <a
+            href="mailto:ecoveridian@gmail.com"
+            className="font-sans text-xs text-on-surface-variant leading-relaxed hover:text-primary hover:underline transition-all duration-300"
+          >
             Contact: ecoveridian@gmail.com
-          </p>
+          </a>
           <p className="font-sans text-xs text-on-surface-variant leading-relaxed">
             Institute for Environmental Analysis &amp; Research
           </p>
@@ -60,14 +63,14 @@ export default function Footer({ setActiveTab }: FooterProps) {
               Partner With Us
             </button>
             <button
-              onClick={() => setActiveTab('collections')}
+              onClick={() => setActiveTab('team')}
               className="text-left text-on-surface-variant hover:text-primary hover:underline transition-all duration-300 cursor-pointer"
               id="footer-link-team"
             >
               Team
             </button>
             <a
-              href="https://github.com/"
+              href="https://github.com/EcoVeridian"
               target="_blank"
               rel="noreferrer"
               className="text-left text-on-surface-variant hover:text-primary hover:underline transition-all duration-300 cursor-pointer"
@@ -76,7 +79,7 @@ export default function Footer({ setActiveTab }: FooterProps) {
               GitHub
             </a>
             <a
-              href="https://www.linkedin.com/"
+              href="https://www.linkedin.com/company/ecoveridian"
               target="_blank"
               rel="noreferrer"
               className="text-left text-on-surface-variant hover:text-primary hover:underline transition-all duration-300 cursor-pointer"

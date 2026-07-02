@@ -7,8 +7,8 @@ import { useState } from 'react';
 import { Menu, X } from 'lucide-react';
 
 interface HeaderProps {
-  activeTab: 'collections' | 'journals' | 'methodology' | 'institutional';
-  setActiveTab: (tab: 'collections' | 'journals' | 'methodology' | 'institutional') => void;
+  activeTab: 'collections' | 'journals' | 'methodology' | 'institutional' | 'team';
+  setActiveTab: (tab: 'collections' | 'journals' | 'methodology' | 'institutional' | 'team') => void;
 }
 
 export default function Header({ activeTab, setActiveTab }: HeaderProps) {
@@ -17,6 +17,7 @@ export default function Header({ activeTab, setActiveTab }: HeaderProps) {
   const navigationItems = [
     { id: 'collections', label: 'Research' },
     { id: 'journals', label: 'Resource Hub' },
+    { id: 'team', label: 'Team' },
     { id: 'methodology', label: 'Partner With Us' },
     { id: 'institutional', label: 'Ways to Work With Us' },
   ] as const;
