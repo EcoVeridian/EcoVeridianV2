@@ -186,7 +186,7 @@ export const SCHOLARLY_ARTICLES: ScholarlyArticle[] = [
     author: 'Risith and Santhosh',
     readTime: '6 min',
     excerpt: 'How we collect, clean, model, and validate data so partners can trust what they are seeing.',
-    image: 'https://images.unsplash.com/photo-1551281044-8b7ef7f2d3f5?auto=format&fit=crop&q=80&w=1600',
+    image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=1600',
     figureCaption: 'Fig. 2 - Workflow summary from raw data to partner-ready findings.',
     abstract: 'This explainer outlines our process from problem framing through model evaluation and delivery.',
     introduction: 'We focus on transparent modeling choices and clear reporting, prioritizing usefulness over unnecessary complexity.',
