@@ -4,8 +4,9 @@
  */
 
 import { useState } from 'react';
+import jsPDF from 'jspdf';
 import { EnvironmentalFramework } from '../types';
-import { X, Download, Calendar, Database, MapPin, Layers, Check, Loader2 } from 'lucide-react';
+import { X, Download, Calendar, Database, MapPin, Layers, Check, Loader2, FileText } from 'lucide-react';
 
 interface FrameworkDrawerProps {
   framework: EnvironmentalFramework;
@@ -15,6 +16,76 @@ interface FrameworkDrawerProps {
 export default function FrameworkDrawer({ framework, onClose }: FrameworkDrawerProps) {
   const [downloading, setDownloading] = useState(false);
   const [downloadFinished, setDownloadFinished] = useState(false);
+  const [pdfGenerating, setPdfGenerating] = useState(false);
+  const [pdfFinished, setPdfFinished] = useState(false);
+
+  const handleDownloadPdf = () => {
+    setPdfGenerating(true);
+    setPdfFinished(false);
+
+    setTimeout(() => {
+      const doc = new jsPDF({ unit: 'pt', format: 'letter' });
+      const pageWidth = doc.internal.pageSize.getWidth();
+      const pageHeight = doc.internal.pageSize.getHeight();
+      const margin = 56;
+      const maxWidth = pageWidth - margin * 2;
+      let y = margin;
+
+      const ensureSpace = (lineHeight: number) => {
+        if (y + lineHeight > pageHeight - margin) {
+          doc.addPage();
+          y = margin;
+        }
+      };
+
+      const writeParagraph = (text: string, fontSize: number, lineHeight: number, bold = false) => {
+        doc.setFont('helvetica', bold ? 'bold' : 'normal');
+        doc.setFontSize(fontSize);
+        const lines = doc.splitTextToSize(text, maxWidth);
+        lines.forEach((line: string) => {
+          ensureSpace(lineHeight);
+          doc.text(line, margin, y);
+          y += lineHeight;
+        });
+      };
+
+      writeParagraph(framework.title, 16, 20, true);
+
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(9.5);
+      doc.setTextColor(110);
+      ensureSpace(16);
+      doc.text(`${framework.id}  |  ${framework.discipline}  |  ${framework.domain}  |  Last updated ${framework.lastUpdated}`, margin, y);
+      doc.setTextColor(0);
+      y += 24;
+
+      writeParagraph(framework.description, 11, 15);
+      y += 8;
+
+      writeParagraph('Resource Details', 12.5, 16, true);
+      writeParagraph(`Topic Tag: ${framework.discipline}`, 10.5, 14);
+      writeParagraph(`Resource Type: ${framework.domain}`, 10.5, 14);
+      writeParagraph(`Update Interval: ${framework.frequency}`, 10.5, 14);
+      writeParagraph(`Geographic Bounds: ${framework.coverage}`, 10.5, 14);
+      y += 8;
+
+      const sections = framework.reportContent && framework.reportContent.length > 0
+        ? framework.reportContent
+        : [{ heading: 'Summary', body: framework.description }];
+
+      sections.forEach((section) => {
+        ensureSpace(20);
+        writeParagraph(section.heading, 13, 17, true);
+        writeParagraph(section.body, 10.5, 14.5);
+        y += 10;
+      });
+
+      doc.save(`${framework.id.toLowerCase().replace(/-/g, '_')}_full_report.pdf`);
+      setPdfGenerating(false);
+      setPdfFinished(true);
+      setTimeout(() => setPdfFinished(false), 2500);
+    }, 600);
+  };
 
   const handleDownload = () => {
     setDownloading(true);
@@ -182,10 +253,52 @@ export default function FrameworkDrawer({ framework, onClose }: FrameworkDrawerP
             <div className="text-outline">Payload Size: <span className="font-bold text-primary">{framework.size}</span></div>
           </div>
 
+          {framework.fileUrl ? (
+            <a
+              href={framework.fileUrl}
+              download
+              className="w-full py-3 mb-3 bg-primary text-on-primary hover:bg-primary-container hover:text-on-primary font-mono text-xs uppercase tracking-widest flex items-center justify-center gap-3 rounded-[2px] transition-colors cursor-pointer"
+              id="drawer-download-file-btn"
+            >
+              <FileText className="w-4 h-4" />
+              Download Original Document (.PDF)
+            </a>
+          ) : framework.format === 'PDF' && (
+            <button
+              onClick={handleDownloadPdf}
+              disabled={pdfGenerating}
+              className="w-full py-3 mb-3 bg-primary text-on-primary hover:bg-primary-container hover:text-on-primary font-mono text-xs uppercase tracking-widest flex items-center justify-center gap-3 rounded-[2px] transition-colors cursor-pointer disabled:opacity-60"
+              id="drawer-download-pdf-btn"
+            >
+              {pdfGenerating ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  Compiling Full Report...
+                </>
+              ) : (
+                <>
+                  <FileText className="w-4 h-4" />
+                  Download Full Report (.PDF)
+                </>
+              )}
+            </button>
+          )}
+
+          {pdfFinished && (
+            <div className="mb-3 p-3 bg-primary-fixed text-on-primary-fixed border border-primary/10 rounded-sm text-xs font-sans text-center flex items-center justify-center gap-2 animate-fade-in">
+              <Check className="w-4 h-4 text-primary" />
+              <span>Full PDF report generated and downloaded!</span>
+            </div>
+          )}
+
           <button
             onClick={handleDownload}
             disabled={downloading}
-            className="w-full py-3 bg-primary text-on-primary hover:bg-primary-container hover:text-on-primary font-mono text-xs uppercase tracking-widest flex items-center justify-center gap-3 rounded-[2px] transition-colors cursor-pointer disabled:opacity-60"
+            className={
+              framework.format === 'PDF'
+                ? 'w-full py-3 border-[0.5px] border-outline text-primary hover:bg-surface-container-low font-mono text-xs uppercase tracking-widest flex items-center justify-center gap-3 rounded-[2px] transition-colors cursor-pointer disabled:opacity-60'
+                : 'w-full py-3 bg-primary text-on-primary hover:bg-primary-container hover:text-on-primary font-mono text-xs uppercase tracking-widest flex items-center justify-center gap-3 rounded-[2px] transition-colors cursor-pointer disabled:opacity-60'
+            }
             id="drawer-download-btn"
           >
             {downloading ? (

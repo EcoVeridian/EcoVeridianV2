@@ -16,6 +16,8 @@ export interface EnvironmentalFramework {
   coverage: string;
   frequency: string;
   sampleData?: Array<Record<string, string | number>>;
+  reportContent?: Array<{ heading: string; body: string }>;
+  fileUrl?: string;
 }
 
 export interface ScholarlyArticle {
