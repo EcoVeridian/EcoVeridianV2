@@ -18,18 +18,20 @@ export default function Footer({ setActiveTab }: FooterProps) {
             <img src="/favicon.svg" alt="EcoVeridian logo" className="w-8 h-8 flex-shrink-0" />
             EcoVeridian
           </span>
-          <p className="font-sans text-xs text-on-surface-variant leading-relaxed uppercase tracking-wider">
-            © 2026 EcoVeridian. All rights reserved.
-          </p>
-          <a
-            href="mailto:ecoveridian@gmail.com"
-            className="font-sans text-xs text-on-surface-variant leading-relaxed hover:text-primary hover:underline transition-all duration-300"
-          >
-            Contact: ecoveridian@gmail.com
-          </a>
-          <p className="font-sans text-xs text-on-surface-variant leading-relaxed">
-            Institute for Environmental Analysis &amp; Research
-          </p>
+          <div className="flex flex-col gap-1">
+            <p className="font-sans text-xs text-on-surface-variant leading-relaxed uppercase tracking-wider">
+              © 2026 EcoVeridian. All rights reserved.
+            </p>
+            <a
+              href="mailto:ecoveridian@gmail.com"
+              className="font-sans text-xs text-on-surface-variant leading-relaxed hover:text-primary hover:underline transition-all duration-300"
+            >
+              Contact: ecoveridian@gmail.com
+            </a>
+            <p className="font-sans text-xs text-on-surface-variant leading-relaxed">
+              Institute for Environmental Analysis &amp; Research
+            </p>
+          </div>
         </div>
 
         {/* Directory Links */}
