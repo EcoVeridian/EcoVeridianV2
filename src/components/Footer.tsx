@@ -14,7 +14,10 @@ export default function Footer({ setActiveTab }: FooterProps) {
         
         {/* Brand Description */}
         <div className="flex flex-col gap-4 max-w-sm">
-          <span className="font-serif text-display-lg-mobile text-primary font-bold italic tracking-tight">EcoVeridian</span>
+          <span className="flex items-center gap-2.5 font-serif text-display-lg-mobile text-primary font-bold italic tracking-tight">
+            <img src="/favicon.svg" alt="EcoVeridian logo" className="w-8 h-8 flex-shrink-0" />
+            EcoVeridian
+          </span>
           <p className="font-sans text-xs text-on-surface-variant leading-relaxed uppercase tracking-wider">
             © 2026 EcoVeridian. All rights reserved.
           </p>
