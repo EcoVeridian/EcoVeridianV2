@@ -125,6 +125,18 @@ export default function MasterIndexView({ frameworks, onSelectFramework }: Maste
   // Quick download helper for row-level trigger
   const handleRowDownload = (e: React.MouseEvent, item: EnvironmentalFramework) => {
     e.stopPropagation(); // prevent opening drawer
+
+    // If a real source file is attached, download that directly instead of generating a CSV.
+    if (item.fileUrl) {
+      const link = document.createElement('a');
+      link.href = item.fileUrl;
+      link.download = '';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      return;
+    }
+
     // Generate simple text schema download
     const headers = ['ID', 'Title', 'Discipline', 'Domain', 'Format', 'Size', 'LastUpdated', 'Coverage'];
     const rowValues = [
@@ -380,7 +392,7 @@ export default function MasterIndexView({ frameworks, onSelectFramework }: Maste
                   <button
                     onClick={(e) => handleRowDownload(e, item)}
                     className="w-8 h-8 flex items-center justify-center rounded-full border-[0.5px] border-outline text-outline hover:border-primary hover:text-primary hover:bg-surface-container-low transition-all flex-shrink-0 cursor-pointer"
-                    title={`Export ${item.id} Metadata`}
+                    title={item.fileUrl ? `Download ${item.id} Source File` : `Export ${item.id} Metadata`}
                     id={`download-row-btn-${item.id}`}
                   >
                     <Download className="w-4 h-4 stroke-[1.5]" />
