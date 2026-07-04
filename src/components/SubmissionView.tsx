@@ -5,14 +5,14 @@
 
 import React, { useState } from 'react';
 import { InquiryFormState } from '../types';
+import { usePagePartner, useSiteSettings } from '../content/ContentContext';
+import { submitInquiry } from '../content/publicDb';
 import { Send, Info, Loader2, AlertTriangle } from 'lucide-react';
 
-// Destination inbox for partner inquiries. Delivered via FormSubmit
-// (https://formsubmit.co), which relays form submissions to this address
-// without requiring a backend server or API key.
-const INQUIRY_EMAIL = 'ecoveridian@gmail.com';
-
 export default function SubmissionView() {
+  const page = usePagePartner();
+  const settings = useSiteSettings();
+
   const [form, setForm] = useState<InquiryFormState>({
     investigatorName: '',
     institution: '',
@@ -20,6 +20,8 @@ export default function SubmissionView() {
     classification: '',
     dossier: '',
   });
+  // Spam honeypot: hidden field real users never fill.
+  const [website, setWebsite] = useState('');
 
   const [submitting, setSubmitting] = useState(false);
   const [submitStep, setSubmitStep] = useState('');
@@ -33,8 +35,34 @@ export default function SubmissionView() {
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
+  const buildReceipt = () => {
+    const transactionHash = Array.from({ length: 32 }, () =>
+      Math.floor(Math.random() * 16).toString(16)
+    ).join('').toUpperCase();
+    return `EcoVeridian Inquiry Receipt
+Reference: EV-${transactionHash}
+Submitted: ${new Date().toLocaleString()}
+
+Name: ${form.investigatorName}
+Organization: ${form.institution || 'Not provided'}
+Email: ${form.returnRelay}
+Inquiry type: ${form.classification}
+
+Message preview:
+"${form.dossier.slice(0, 220)}${form.dossier.length > 220 ? '...' : ''}"
+
+Thanks for reaching out. ${page.responseNote}`;
+  };
+
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Bots that filled the honeypot get a fake success and no processing.
+    if (website.trim() !== '') {
+      setReceipt(buildReceipt());
+      return;
+    }
+
     setSubmitting(true);
     setSubmitError(null);
     setSubmitStep('Reviewing your inquiry details...');
@@ -43,8 +71,20 @@ export default function SubmissionView() {
       setSubmitStep('Routing request to the EcoVeridian team...');
     }, 600);
 
+    // 1. Store in the team's inbox (Firestore) — the primary record.
+    const stored = await submitInquiry({
+      name: form.investigatorName,
+      organization: form.institution,
+      email: form.returnRelay,
+      inquiryType: form.classification,
+      details: form.dossier,
+      website: '',
+    });
+
+    // 2. Best-effort email relay via FormSubmit so the team also gets a mail.
+    let emailed = false;
     try {
-      const response = await fetch(`https://formsubmit.co/ajax/${INQUIRY_EMAIL}`, {
+      const response = await fetch(`https://formsubmit.co/ajax/${settings.formSubmitEmail}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -61,40 +101,23 @@ export default function SubmissionView() {
           _template: 'table',
         }),
       });
-
-      setSubmitStep('Preparing confirmation receipt...');
-
       const data = await response.json().catch(() => null);
-      if (!response.ok || !data || (data.success !== 'true' && data.success !== true)) {
-        throw new Error('Delivery failed');
-      }
-
-      const transactionHash = Array.from({ length: 32 }, () =>
-        Math.floor(Math.random() * 16).toString(16)
-      ).join('').toUpperCase();
-      const blockReceipt = `EcoVeridian Inquiry Receipt
-Reference: EV-${transactionHash}
-Submitted: ${new Date().toLocaleString()}
-
-Name: ${form.investigatorName}
-Organization: ${form.institution || 'Not provided'}
-Email: ${form.returnRelay}
-Inquiry type: ${form.classification}
-
-Message preview:
-"${form.dossier.slice(0, 220)}${form.dossier.length > 220 ? '...' : ''}"
-
-Thanks for reaching out. We typically respond within a few days.`;
-
-      setReceipt(blockReceipt);
+      emailed = Boolean(response.ok && data && (data.success === 'true' || data.success === true));
     } catch {
-      setSubmitError(
-        `We could not send your inquiry right now. Please try again, or email us directly at ${INQUIRY_EMAIL}.`
-      );
-    } finally {
-      clearTimeout(stepTimer);
-      setSubmitting(false);
+      emailed = false;
     }
+
+    clearTimeout(stepTimer);
+    setSubmitStep('Preparing confirmation receipt...');
+
+    if (stored || emailed) {
+      setReceipt(buildReceipt());
+    } else {
+      setSubmitError(
+        `We could not send your inquiry right now. Please try again, or email us directly at ${settings.contactEmail}.`
+      );
+    }
+    setSubmitting(false);
   };
 
   const handleResetForm = () => {
@@ -105,18 +128,19 @@ Thanks for reaching out. We typically respond within a few days.`;
       classification: '',
       dossier: '',
     });
+    setWebsite('');
     setSubmitError(null);
     setReceipt(null);
   };
 
   return (
     <div className="w-full max-w-[1280px] mx-auto px-5 md:px-16 py-12 md:py-20 animate-fade-in">
-      
+
       {/* Header Section */}
       <div className="max-w-[720px] mb-16 text-left border-b-[0.5px] border-outline-variant pb-12">
-        <h1 className="font-serif text-4xl md:text-5xl font-bold text-primary mb-6">Partner With Us</h1>
+        <h1 className="font-serif text-4xl md:text-5xl font-bold text-primary mb-6">{page.heading}</h1>
         <p className="font-sans text-base md:text-lg text-on-surface-variant leading-relaxed">
-          Tell us what you are working on and where you need help. We support forecasting, analysis, and collaborative research projects with organizations focused on sustainability and public lands.
+          {page.intro}
         </p>
       </div>
 
@@ -139,7 +163,7 @@ Thanks for reaching out. We typically respond within a few days.`;
           <div className="mt-8 pt-6 border-t-[0.5px] border-outline-variant flex flex-col sm:flex-row justify-between items-center gap-4">
             <div className="flex items-center gap-2 text-xs font-sans text-outline">
               <Info className="w-4 h-4" />
-              <span>We typically respond within a few days.</span>
+              <span>{page.responseNote}</span>
             </div>
             <button
               onClick={handleResetForm}
@@ -153,19 +177,19 @@ Thanks for reaching out. We typically respond within a few days.`;
       ) : (
         /* Original form view */
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
-          
+
           {/* Left Column: Contact details and response note */}
           <div className="lg:col-span-4 flex flex-col gap-12 lg:pr-12 lg:border-r-[0.5px] lg:border-outline-variant h-fit">
-            
+
             {/* Notice Box */}
             <div className="bg-surface-container-low p-6 border-[0.5px] border-tertiary/20 relative rounded-[2px]">
               <div className="absolute top-0 left-0 w-1.5 h-full bg-tertiary"></div>
               <h3 className="font-mono text-xs uppercase tracking-widest text-tertiary mb-3 flex items-center gap-2 font-bold">
                 <Info className="w-4 h-4 text-tertiary" />
-                RESPONSE LATENCY
+                {page.noticeHeading}
               </h3>
               <p className="font-sans text-xs md:text-sm text-on-surface-variant leading-relaxed">
-                We typically respond within a few days depending on current project volume.
+                {page.noticeBody}
               </p>
             </div>
 
@@ -177,7 +201,7 @@ Thanks for reaching out. We typically respond within a few days.`;
               <div className="space-y-6">
                 <div>
                   <p className="font-sans text-[11px] text-outline uppercase font-semibold mb-1">CONTACT EMAIL</p>
-                  <span className="font-sans text-lg text-primary font-semibold">ecoveridian@gmail.com</span>
+                  <span className="font-sans text-lg text-primary font-semibold">{settings.contactEmail}</span>
                 </div>
               </div>
             </section>
@@ -192,7 +216,7 @@ Thanks for reaching out. We typically respond within a few days.`;
                 <br />
                 Student-led research team
                 <br />
-                Email: ecoveridian@gmail.com
+                Email: {settings.contactEmail}
               </address>
             </section>
           </div>
@@ -200,7 +224,7 @@ Thanks for reaching out. We typically respond within a few days.`;
           {/* Right Column: Submission Form */}
           <div className="lg:col-span-8 lg:pl-12">
             <form onSubmit={handleFormSubmit} className="space-y-8 max-w-[720px]">
-              
+
               {submitting ? (
                 /* Submitting progress sequence */
                 <div className="py-24 text-center animate-pulse flex flex-col justify-center items-center gap-4">
@@ -282,11 +306,9 @@ Thanks for reaching out. We typically respond within a few days.`;
                       }}
                     >
                       <option value="" disabled>Select inquiry type...</option>
-                      <option value="General Inquiry">General Inquiry</option>
-                      <option value="Research Collaboration">Research Collaboration</option>
-                      <option value="Data or Forecasting Request">Data/Forecasting Request</option>
-                      <option value="Media or Press">Media/Press</option>
-                      <option value="Other">Other</option>
+                      {page.inquiryTypes.map((type) => (
+                        <option key={type} value={type}>{type}</option>
+                      ))}
                     </select>
                   </div>
 
@@ -304,6 +326,20 @@ Thanks for reaching out. We typically respond within a few days.`;
                       required
                       rows={6}
                       className="bg-transparent border-b-[0.5px] border-outline focus:outline-none focus:border-primary focus:bg-surface-container-low transition-all py-2 text-sm font-sans resize-y min-h-[120px] w-full"
+                    />
+                  </div>
+
+                  {/* Honeypot field — hidden from humans, catnip for bots */}
+                  <div className="absolute w-px h-px overflow-hidden -left-[9999px]" aria-hidden="true">
+                    <label htmlFor="website">Website</label>
+                    <input
+                      type="text"
+                      name="website"
+                      id="website"
+                      value={website}
+                      onChange={(e) => setWebsite(e.target.value)}
+                      tabIndex={-1}
+                      autoComplete="off"
                     />
                   </div>
 

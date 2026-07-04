@@ -4,11 +4,11 @@
  */
 
 import { useState } from 'react';
-import { ScholarlyArticle } from '../types';
+import { ArticleDoc } from '../types';
 import { ArrowLeft, Download, FileText, Check, Award, Copy, Loader2, Sparkles } from 'lucide-react';
 
 interface ArticleReaderProps {
-  article: ScholarlyArticle;
+  article: ArticleDoc;
   onClose: () => void;
 }
 
@@ -80,7 +80,7 @@ ${article.references.map((r, i) => `[${i + 1}] ${r}`).join('\n')}
 =========================================
 OFFICIAL CITATION RECORD
 EcoVeridian Reference Copy
-EcoVeridian Publication ID: EV-${article.id}-2026
+EcoVeridian Publication ID: EV-${article.slug}-2026
 =========================================
 `;
         const blob = new Blob([content], { type: 'text/plain' });
@@ -122,7 +122,7 @@ EcoVeridian Publication ID: EV-${article.id}-2026
             {article.category}
           </span>
           <span className="font-mono text-xs px-2 py-1 bg-surface border-[0.5px] border-outline text-on-surface-variant uppercase">
-            ID: ECO-{article.id}
+            ID: ECO-{article.slug}
           </span>
           <span className="font-mono text-xs text-outline-variant ml-auto">
             Published June 2026
@@ -259,7 +259,7 @@ EcoVeridian Publication ID: EV-${article.id}-2026
           <div className="border-[0.5px] border-outline-variant relative overflow-hidden bg-surface group">
             <img
               className="w-full h-[350px] md:h-[450px] object-cover filter grayscale contrast-125 brightness-90 hover:brightness-100 transition-all duration-500"
-              src={article.image}
+              src={article.imageUrl}
               alt={article.title}
               referrerPolicy="no-referrer"
             />

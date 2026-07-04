@@ -3,40 +3,12 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-const TEAM_MEMBERS = [
-  {
-    name: 'Risith Kankanamge',
-    role: 'Co-Founder & Lead Full-Stack Developer',
-    blurb:
-      'Architected the core platform and proprietary scoring engine. Engineered the browser extension end-to-end and established the web application\'s technical foundation.',
-    links: [
-      { label: 'LinkedIn', href: 'https://www.linkedin.com/in/risith-kankanamge/' },
-      { label: 'Email', href: 'mailto:risithcha@gmail.com' },
-    ],
-  },
-  {
-    name: 'Santhosh Ilaiyaraja',
-    role: 'Co-Founder & Lead Interface Architect',
-    blurb:
-      'Designs and optimizes the platform\'s visual layer. Oversees interface architecture, component engineering, and end-to-end frontend performance.',
-    links: [
-      { label: 'LinkedIn', href: 'https://www.linkedin.com/in/santhosh-ilaiyaraja-77871436a/' },
-      { label: 'Email', href: 'mailto:santhosh.ilaiyaraja21@gmail.com' },
-    ],
-  },
-  {
-    name: 'Ritvik Rajkumar',
-    role: 'Co-Founder & Lead Product Engineer',
-    blurb:
-      'Drives product vision across user flows and feature design. Focuses on usability, interaction patterns, prototyping, and product flows across React/Tailwind.',
-    links: [
-      { label: 'LinkedIn', href: 'https://www.linkedin.com/in/ritvik-sujan-rajkumar' },
-      { label: 'Email', href: 'mailto:rajkumarritvik1@gmail.com' },
-    ],
-  },
-] as const;
+import { useTeam } from '../content/ContentContext';
 
 export default function TeamView() {
+  const team = useTeam();
+  const visibleMembers = team.filter((member) => member.visible);
+
   return (
     <section className="w-full max-w-[1280px] mx-auto px-5 md:px-16 py-12 md:py-20 animate-fade-in">
       <div className="max-w-[760px] mb-12 md:mb-16 border-b-[0.5px] border-outline-variant pb-10">
@@ -50,11 +22,19 @@ export default function TeamView() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8">
-        {TEAM_MEMBERS.map((member) => (
+        {visibleMembers.map((member) => (
           <article
-            key={member.name}
+            key={member.slug}
             className="bg-surface-container-low border-[0.5px] border-outline-variant p-6 md:p-7 rounded-[2px] hover:border-primary/40 transition-colors duration-200"
           >
+            {member.photoUrl && (
+              <img
+                src={member.photoUrl}
+                alt={member.name}
+                className="w-20 h-20 rounded-full object-cover border-[0.5px] border-outline-variant mb-4"
+                referrerPolicy="no-referrer"
+              />
+            )}
             <h2 className="font-serif text-2xl text-primary font-semibold leading-tight mb-2">{member.name}</h2>
             <p className="font-mono text-[11px] uppercase tracking-[0.12em] text-secondary font-semibold mb-4">
               {member.role}
@@ -71,7 +51,7 @@ export default function TeamView() {
                 {member.links.map((link) => (
                   <a
                     key={link.label}
-                    href={link.href}
+                    href={link.url}
                     target="_blank"
                     rel="noreferrer"
                     className="px-3 py-1.5 text-[11px] uppercase tracking-[0.08em] border-[0.5px] border-outline rounded-[2px] text-on-surface-variant bg-surface hover:border-primary hover:text-primary transition-colors"

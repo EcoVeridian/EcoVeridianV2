@@ -1,0 +1,160 @@
+rules_version = '2';
+
+// EcoVeridian CMS rules with granular role permissions.
+//
+// Admins live in /admins/{uid} ({email, displayName, role}) where role is a
+// doc id in /roles. Each role carries a permissions map (articles, resources,
+// team, taxonomies, pages, settings, inquiries, media, users). 'owner' is a
+// hardcoded superuser: always full access, its role doc is immutable, and
+// owner accounts cannot be modified or removed by anyone through the client.
+//
+// The bootstrap owner email below can self-create its owner doc once, so no
+// manual console edits are needed to stand the system up. Everyone else joins
+// via /adminInvites/{email} docs.
+//
+// NOTE: rules are not filters — public list queries MUST include
+// where('publishStatus','==','published') or the whole query is denied.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isSignedIn() &&
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+    }
+
+    function myRole() {
+      return get(/databases/$(database)/documents/admins/$(request.auth.uid)).data.role;
+    }
+
+    function isOwner() {
+      return isAdmin() && myRole() == 'owner';
+    }
+
+    // Owner short-circuits so a missing/broken role doc can never lock owners
+    // out; other roles fail closed if their role doc is missing.
+    function hasPerm(perm) {
+      return isAdmin() && (
+        myRole() == 'owner' ||
+        get(/databases/$(database)/documents/roles/$(myRole())).data.permissions[perm] == true
+      );
+    }
+
+    function isBootstrapOwnerEmail() {
+      return isSignedIn() && request.auth.token.email == 'risithcha@gmail.com';
+    }
+
+    function inviteFor(email) {
+      return get(/databases/$(database)/documents/adminInvites/$(email));
+    }
+
+    function hasInvite(email) {
+      return exists(/databases/$(database)/documents/adminInvites/$(email));
+    }
+
+    // Published content is public; drafts readable by any admin; writes need
+    // the matching content permission.
+    match /articles/{slug} {
+      allow read: if resource.data.publishStatus == 'published' || isAdmin();
+      allow write: if hasPerm('articles');
+    }
+
+    match /frameworks/{slug} {
+      allow read: if resource.data.publishStatus == 'published' || isAdmin();
+      allow write: if hasPerm('resources');
+    }
+
+    match /team/{slug} {
+      allow read: if true;
+      allow write: if hasPerm('team');
+    }
+
+    match /taxonomies/{taxonomyId} {
+      allow read: if true;
+      allow write: if hasPerm('taxonomies');
+    }
+
+    match /pages/{pageId} {
+      allow read: if true;
+      allow write: if hasPerm('pages');
+    }
+
+    match /settings/{settingId} {
+      allow read: if true;
+      allow write: if hasPerm('settings');
+    }
+
+    // Anyone may file an inquiry, but only with exactly the expected shape.
+    // 'website' is a honeypot field that must stay empty. Reading/managing
+    // the inbox requires the inquiries permission (it contains PII).
+    match /inquiries/{inquiryId} {
+      allow create: if
+        request.resource.data.keys().hasOnly(
+          ['name', 'organization', 'email', 'inquiryType', 'details', 'status', 'createdAt', 'website'])
+        && request.resource.data.status == 'unread'
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.name is string
+        && request.resource.data.name.size() > 0
+        && request.resource.data.name.size() < 200
+        && request.resource.data.organization is string
+        && request.resource.data.organization.size() < 300
+        && request.resource.data.email is string
+        && request.resource.data.email.size() > 2
+        && request.resource.data.email.size() < 320
+        && request.resource.data.inquiryType is string
+        && request.resource.data.inquiryType.size() < 100
+        && request.resource.data.details is string
+        && request.resource.data.details.size() > 0
+        && request.resource.data.details.size() < 5000
+        && (!('website' in request.resource.data) || request.resource.data.website == '');
+      allow read, update, delete: if hasPerm('inquiries');
+    }
+
+    // Role definitions. All admins may read (the client resolves its own
+    // permissions from here); managing roles requires the users permission.
+    // The 'owner' role doc is immutable so the superuser can't be defanged.
+    match /roles/{roleId} {
+      allow read: if isAdmin();
+      allow write: if hasPerm('users') && roleId != 'owner';
+      // One exception: seeding may create the owner doc if it doesn't exist.
+      allow create: if hasPerm('users');
+    }
+
+    // Only actual owners may grant the owner role (a 'users'-permission
+    // holder must not be able to mint owners and escalate).
+    function grantedRoleAllowed() {
+      return request.resource.data.role != 'owner' || isOwner();
+    }
+
+    match /admins/{uid} {
+      allow read: if isAdmin();
+      // Nobody can modify or remove an owner account through the client —
+      // not even another owner (prevents both takeovers and self-lockout).
+      allow delete: if hasPerm('users') && resource.data.role != 'owner';
+      allow update: if hasPerm('users') && resource.data.role != 'owner' && grantedRoleAllowed();
+      // Self-claim: the bootstrap owner email may create its own owner doc;
+      // invitees may create their own doc with exactly the invited role.
+      allow create: if (hasPerm('users') && grantedRoleAllowed())
+        || (
+          isSignedIn()
+          && request.auth.uid == uid
+          && (
+            (isBootstrapOwnerEmail() && request.resource.data.role == 'owner')
+            || (
+              hasInvite(request.auth.token.email)
+              && request.resource.data.role == inviteFor(request.auth.token.email).data.role
+            )
+          )
+        );
+    }
+
+    match /adminInvites/{email} {
+      allow read: if isAdmin() || (isSignedIn() && request.auth.token.email == email);
+      allow delete: if hasPerm('users');
+      allow create, update: if hasPerm('users') && grantedRoleAllowed();
+    }
+  }
+}

@@ -1,0 +1,44 @@
+rules_version = '2';
+
+// Public read; writes restricted to admins (checked against the Firestore
+// /admins collection via cross-service rules — Spark-compatible).
+// Deploy with: firebase deploy --only storage
+// NOTE: requires the Storage bucket to exist (console → Storage → Get Started).
+service firebase.storage {
+  match /b/{bucket}/o {
+    function myRole() {
+      return firestore.get(/databases/(default)/documents/admins/$(request.auth.uid)).data.role;
+    }
+
+    // Mirrors the Firestore 'media' permission: owner is superuser, other
+    // roles need permissions.media on their role doc.
+    function canManageMedia() {
+      return request.auth != null &&
+        firestore.exists(/databases/(default)/documents/admins/$(request.auth.uid)) &&
+        (
+          myRole() == 'owner' ||
+          firestore.get(/databases/(default)/documents/roles/$(myRole())).data.permissions.media == true
+        );
+    }
+
+    match /images/{fileName} {
+      allow read: if true;
+      allow write: if canManageMedia()
+        && request.resource.size < 5 * 1024 * 1024
+        && request.resource.contentType.matches('image/.*');
+      allow delete: if canManageMedia();
+    }
+
+    match /documents/{fileName} {
+      allow read: if true;
+      allow write: if canManageMedia()
+        && request.resource.size < 20 * 1024 * 1024
+        && request.resource.contentType == 'application/pdf';
+      allow delete: if canManageMedia();
+    }
+
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

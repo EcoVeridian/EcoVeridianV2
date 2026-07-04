@@ -5,11 +5,11 @@
 
 import { useState } from 'react';
 import jsPDF from 'jspdf';
-import { EnvironmentalFramework } from '../types';
+import { FrameworkDoc } from '../types';
 import { X, Download, Calendar, Database, MapPin, Layers, Check, Loader2, FileText } from 'lucide-react';
 
 interface FrameworkDrawerProps {
-  framework: EnvironmentalFramework;
+  framework: FrameworkDoc;
   onClose: () => void;
 }
 
@@ -55,7 +55,7 @@ export default function FrameworkDrawer({ framework, onClose }: FrameworkDrawerP
       doc.setFontSize(9.5);
       doc.setTextColor(110);
       ensureSpace(16);
-      doc.text(`${framework.id}  |  ${framework.discipline}  |  ${framework.domain}  |  Last updated ${framework.lastUpdated}`, margin, y);
+      doc.text(`${framework.slug}  |  ${framework.discipline}  |  ${framework.domain}  |  Last updated ${framework.lastUpdated}`, margin, y);
       doc.setTextColor(0);
       y += 24;
 
@@ -80,7 +80,7 @@ export default function FrameworkDrawer({ framework, onClose }: FrameworkDrawerP
         y += 10;
       });
 
-      doc.save(`${framework.id.toLowerCase().replace(/-/g, '_')}_full_report.pdf`);
+      doc.save(`${framework.slug.toLowerCase().replace(/-/g, '_')}_full_report.pdf`);
       setPdfGenerating(false);
       setPdfFinished(true);
       setTimeout(() => setPdfFinished(false), 2500);
@@ -95,38 +95,31 @@ export default function FrameworkDrawer({ framework, onClose }: FrameworkDrawerP
       setDownloading(false);
       setDownloadFinished(true);
 
-      // Generate actual CSV content from sampleData!
-      if (framework.sampleData && framework.sampleData.length > 0) {
-        const headers = Object.keys(framework.sampleData[0]);
+      // Generate actual CSV content from the sample table!
+      if (framework.sampleTable && framework.sampleTable.rows.length > 0) {
+        const escapeCell = (val: string) => (val.includes(',') ? `"${val}"` : val);
         const csvRows = [
-          headers.join(','), // Header row
-          ...framework.sampleData.map((row) =>
-            headers
-              .map((fieldName) => {
-                const val = row[fieldName];
-                return typeof val === 'string' && val.includes(',') ? `"${val}"` : val;
-              })
-              .join(',')
-          ),
+          framework.sampleTable.columns.join(','), // Header row
+          ...framework.sampleTable.rows.map((row) => row.cells.map(escapeCell).join(',')),
         ];
         const csvContent = csvRows.join('\n');
         const blob = new Blob([csvContent], { type: 'text/csv' });
         const url = URL.createObjectURL(blob);
         const link = document.createElement('a');
         link.href = url;
-        link.download = `${framework.id.toLowerCase().replace(/-/g, '_')}_dataset_sample.csv`;
+        link.download = `${framework.slug.toLowerCase().replace(/-/g, '_')}_dataset_sample.csv`;
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
         URL.revokeObjectURL(url);
       } else {
         // Fallback simple download
-        const fallbackContent = `ID,Title,Discipline,Domain,Format,Size\n${framework.id},"${framework.title}","${framework.discipline}","${framework.domain}",${framework.format},${framework.size}`;
+        const fallbackContent = `ID,Title,Discipline,Domain,Format,Size\n${framework.slug},"${framework.title}","${framework.discipline}","${framework.domain}",${framework.format},${framework.size}`;
         const blob = new Blob([fallbackContent], { type: 'text/csv' });
         const url = URL.createObjectURL(blob);
         const link = document.createElement('a');
         link.href = url;
-        link.download = `${framework.id.toLowerCase().replace(/-/g, '_')}_spec.csv`;
+        link.download = `${framework.slug.toLowerCase().replace(/-/g, '_')}_spec.csv`;
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
@@ -135,7 +128,7 @@ export default function FrameworkDrawer({ framework, onClose }: FrameworkDrawerP
     }, 1200);
   };
 
-  const statusColors = {
+  const statusColors: Record<string, string> = {
     Verified: 'bg-primary-fixed text-on-primary-fixed border border-primary/10',
     Archived: 'bg-surface-variant text-on-surface-variant border border-outline-variant',
     Standard: 'bg-secondary-container/30 text-on-secondary-container border border-secondary/15',
@@ -154,10 +147,10 @@ export default function FrameworkDrawer({ framework, onClose }: FrameworkDrawerP
           <div className="flex justify-between items-start mb-6">
             <div className="flex items-center gap-3">
               <span className="font-mono text-xs text-secondary border-[0.5px] border-secondary px-2 py-0.5 font-bold">
-                {framework.id}
+                {framework.slug}
               </span>
-              <span className={`font-mono text-[11px] px-2 py-0.5 font-semibold ${statusColors[framework.status]}`}>
-                {framework.status}
+              <span className={`font-mono text-[11px] px-2 py-0.5 font-semibold ${statusColors[framework.badge] ?? statusColors.Standard}`}>
+                {framework.badge}
               </span>
             </div>
             <button
@@ -213,7 +206,7 @@ export default function FrameworkDrawer({ framework, onClose }: FrameworkDrawerP
           </div>
 
           {/* Sample Data Preview Table */}
-          {framework.sampleData && framework.sampleData.length > 0 && (
+          {framework.sampleTable && framework.sampleTable.rows.length > 0 && (
             <div className="mb-8">
               <h3 className="font-mono text-xs uppercase tracking-widest text-outline mb-3 font-bold">
                 Verified Sample Data Preview
@@ -222,7 +215,7 @@ export default function FrameworkDrawer({ framework, onClose }: FrameworkDrawerP
                 <table className="w-full text-left font-sans text-xs border-collapse">
                   <thead>
                     <tr className="bg-surface-container border-b-[0.5px] border-outline-variant text-[10px] uppercase font-mono tracking-wider text-outline">
-                      {Object.keys(framework.sampleData[0]).map((header) => (
+                      {framework.sampleTable.columns.map((header) => (
                         <th key={header} className="p-2 border-r-[0.5px] border-outline-variant last:border-r-0">
                           {header.replace(/_/g, ' ')}
                         </th>
@@ -230,9 +223,9 @@ export default function FrameworkDrawer({ framework, onClose }: FrameworkDrawerP
                     </tr>
                   </thead>
                   <tbody>
-                    {framework.sampleData.map((row, index) => (
+                    {framework.sampleTable.rows.map((row, index) => (
                       <tr key={index} className="border-b-[0.5px] border-outline-variant last:border-b-0 hover:bg-surface-container-low">
-                        {Object.values(row).map((val, cellIdx) => (
+                        {row.cells.map((val, cellIdx) => (
                           <td key={cellIdx} className="p-2 font-mono text-[11px] border-r-[0.5px] border-outline-variant last:border-r-0 text-on-surface-variant">
                             {val}
                           </td>

@@ -4,97 +4,97 @@
  */
 
 import React, { useState, useMemo } from 'react';
-import { EnvironmentalFramework } from '../types';
+import { useNavigate } from 'react-router-dom';
+import { FrameworkDoc } from '../types';
+import { useFrameworks, useTaxonomies } from '../content/ContentContext';
 import { Download, Search, SlidersHorizontal, Check, RefreshCw, ChevronLeft, ChevronRight } from 'lucide-react';
 
-interface MasterIndexViewProps {
-  frameworks: EnvironmentalFramework[];
-  onSelectFramework: (framework: EnvironmentalFramework) => void;
-}
+const badgeTags: Record<string, string> = {
+  Verified: 'bg-primary-fixed text-on-primary-fixed border border-primary/10',
+  Archived: 'bg-surface-variant text-on-surface-variant border border-outline-variant',
+  Standard: 'bg-secondary-container/30 text-on-secondary-container border border-secondary/15',
+};
 
-export default function MasterIndexView({ frameworks, onSelectFramework }: MasterIndexViewProps) {
+export default function MasterIndexView() {
+  const navigate = useNavigate();
+  const frameworks = useFrameworks();
+  const taxonomies = useTaxonomies();
+
+  // Filter option labels come from the admin-managed taxonomies.
+  const disciplineOptions = useMemo(
+    () => [...(taxonomies.disciplines?.values ?? [])].sort((a, b) => a.order - b.order).map((v) => v.label),
+    [taxonomies],
+  );
+  const domainOptions = useMemo(
+    () => [...(taxonomies.domains?.values ?? [])].sort((a, b) => a.order - b.order).map((v) => v.label),
+    [taxonomies],
+  );
+
   // Filter States
   const [searchQuery, setSearchQuery] = useState('');
-  
-  // Discipline multi-select state
-  const [disciplines, setDisciplines] = useState<Record<string, boolean>>({
-    'Tourism Forecasting': false,
-    'Environmental Data Analysis': false,
-    'Sustainability Metrics': false,
-    'Machine Learning Models': false,
-    'Engineering Design Challenge': false,
-  });
-
-  // Domain Focus multi-select state
-  const [domains, setDomains] = useState<Record<string, boolean>>({
-    'Written Report': false,
-    'Dataset Summary': false,
-    'Code / Notebook': false,
-  });
+  const [selectedDisciplines, setSelectedDisciplines] = useState<ReadonlySet<string>>(new Set());
+  const [selectedDomains, setSelectedDomains] = useState<ReadonlySet<string>>(new Set());
 
   // Pagination states
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 4;
 
-  // Active filters (synchronized immediately or on "Apply Filters" click)
-  // Let's implement full reactive live filtering, and let "Apply Filters" reset pagination and show an elegant status flash.
-  const [appliedFilters, setAppliedFilters] = useState({
-    disciplines: { ...disciplines },
-    domains: { ...domains },
-    searchQuery: '',
-  });
+  // Active filters, synchronized on "Apply Filters" click.
+  const [appliedFilters, setAppliedFilters] = useState<{
+    disciplines: ReadonlySet<string>;
+    domains: ReadonlySet<string>;
+    searchQuery: string;
+  }>({ disciplines: new Set(), domains: new Set(), searchQuery: '' });
 
   const [filterFlash, setFilterFlash] = useState(false);
 
   // Apply Action
   const handleApplyFilters = () => {
     setAppliedFilters({
-      disciplines: { ...disciplines },
-      domains: { ...domains },
-      searchQuery: searchQuery,
+      disciplines: new Set(selectedDisciplines),
+      domains: new Set(selectedDomains),
+      searchQuery,
     });
     setCurrentPage(1);
     setFilterFlash(true);
     setTimeout(() => setFilterFlash(false), 2000);
   };
 
-  // Toggle helpers
-  const handleDisciplineChange = (key: string) => {
-    setDisciplines((prev) => ({ ...prev, [key]: !prev[key] }));
+  const toggleIn = (set: ReadonlySet<string>, value: string): Set<string> => {
+    const next = new Set(set);
+    if (next.has(value)) next.delete(value);
+    else next.add(value);
+    return next;
   };
 
-  const handleDomainChange = (key: string) => {
-    setDomains((prev) => ({ ...prev, [key]: !prev[key] }));
+  const handleReset = () => {
+    setSelectedDisciplines(new Set());
+    setSelectedDomains(new Set());
+    setSearchQuery('');
+    setAppliedFilters({ disciplines: new Set(), domains: new Set(), searchQuery: '' });
+    setCurrentPage(1);
   };
 
   // Filter logic
   const filteredFrameworks = useMemo(() => {
     return frameworks.filter((item) => {
-      // 1. Search query check (matches ID, title, coverage, or description)
+      // 1. Search query check (matches code, title, coverage, or description)
       const q = appliedFilters.searchQuery.toLowerCase();
       const matchesSearch =
         item.title.toLowerCase().includes(q) ||
-        item.id.toLowerCase().includes(q) ||
+        item.slug.toLowerCase().includes(q) ||
         item.description.toLowerCase().includes(q) ||
         item.coverage.toLowerCase().includes(q);
 
       if (!matchesSearch) return false;
 
       // 2. Topic tag filter check
-      const activeDisciplines = Object.entries(appliedFilters.disciplines)
-        .filter(([_, checked]) => checked)
-        .map(([name]) => name);
-
-      if (activeDisciplines.length > 0 && !activeDisciplines.includes(item.discipline)) {
+      if (appliedFilters.disciplines.size > 0 && !appliedFilters.disciplines.has(item.discipline)) {
         return false;
       }
 
       // 3. Format filter check
-      const activeDomains = Object.entries(appliedFilters.domains)
-        .filter(([_, checked]) => checked)
-        .map(([name]) => name);
-
-      if (activeDomains.length > 0 && !activeDomains.includes(item.domain)) {
+      if (appliedFilters.domains.size > 0 && !appliedFilters.domains.has(item.domain)) {
         return false;
       }
 
@@ -116,14 +116,8 @@ export default function MasterIndexView({ frameworks, onSelectFramework }: Maste
     }
   };
 
-  const statusTags = {
-    Verified: 'bg-primary-fixed text-on-primary-fixed border border-primary/10',
-    Archived: 'bg-surface-variant text-on-surface-variant border border-outline-variant',
-    Standard: 'bg-secondary-container/30 text-on-secondary-container border border-secondary/15',
-  };
-
   // Quick download helper for row-level trigger
-  const handleRowDownload = (e: React.MouseEvent, item: EnvironmentalFramework) => {
+  const handleRowDownload = (e: React.MouseEvent, item: FrameworkDoc) => {
     e.stopPropagation(); // prevent opening drawer
 
     // If a real source file is attached, download that directly instead of generating a CSV.
@@ -140,7 +134,7 @@ export default function MasterIndexView({ frameworks, onSelectFramework }: Maste
     // Generate simple text schema download
     const headers = ['ID', 'Title', 'Discipline', 'Domain', 'Format', 'Size', 'LastUpdated', 'Coverage'];
     const rowValues = [
-      item.id,
+      item.slug,
       `"${item.title}"`,
       `"${item.discipline}"`,
       `"${item.domain}"`,
@@ -154,7 +148,7 @@ export default function MasterIndexView({ frameworks, onSelectFramework }: Maste
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = `ecoveridian_${item.id.toLowerCase().replace(/-/g, '_')}_resource_metadata.csv`;
+    link.download = `ecoveridian_${item.slug.toLowerCase().replace(/-/g, '_')}_resource_metadata.csv`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -163,11 +157,11 @@ export default function MasterIndexView({ frameworks, onSelectFramework }: Maste
 
   return (
     <div className="w-full max-w-[1280px] mx-auto px-5 md:px-16 py-12 md:py-16 grid grid-cols-1 md:grid-cols-12 gap-12 animate-fade-in">
-      
+
       {/* Left Sidebar: Taxonomy (md:col-span-3) */}
       <aside className="col-span-1 md:col-span-3">
         <div className="sticky top-[100px] flex flex-col gap-8">
-          
+
           <div className="border-b-[0.5px] border-outline pb-4 flex items-center justify-between">
             <h2 className="font-serif text-2xl font-semibold text-primary">Filters</h2>
             <SlidersHorizontal className="w-4 h-4 text-outline" />
@@ -179,32 +173,26 @@ export default function MasterIndexView({ frameworks, onSelectFramework }: Maste
               Topic Tags
             </h3>
             <ul className="space-y-3 font-sans text-sm">
-              {[
-                { name: 'Tourism Forecasting', count: 1 },
-                { name: 'Environmental Data Analysis', count: 1 },
-                { name: 'Sustainability Metrics', count: 1 },
-                { name: 'Machine Learning Models', count: 1 },
-                { name: 'Engineering Design Challenge', count: 1 },
-              ].map((disc) => (
-                <li key={disc.name}>
+              {disciplineOptions.map((label) => (
+                <li key={label}>
                   <label className="flex items-center gap-3 cursor-pointer group select-none">
                     <input
                       type="checkbox"
-                      checked={disciplines[disc.name]}
-                      onChange={() => handleDisciplineChange(disc.name)}
+                      checked={selectedDisciplines.has(label)}
+                      onChange={() => setSelectedDisciplines((prev) => toggleIn(prev, label))}
                       className="appearance-none w-4 h-4 border-[0.5px] border-outline rounded-sm checked:bg-primary checked:border-primary transition-colors focus:ring-1 focus:ring-primary focus:ring-offset-1 focus:ring-offset-surface cursor-pointer"
                     />
                     <span
                       className={`transition-colors ${
-                        disciplines[disc.name]
+                        selectedDisciplines.has(label)
                           ? 'text-primary font-semibold'
                           : 'text-on-surface group-hover:text-primary'
                       }`}
                     >
-                      {disc.name}
+                      {label}
                     </span>
                     <span className="ml-auto font-mono text-[10px] text-outline-variant group-hover:text-primary">
-                      {disc.count}
+                      {frameworks.filter((f) => f.discipline === label).length}
                     </span>
                   </label>
                 </li>
@@ -218,23 +206,23 @@ export default function MasterIndexView({ frameworks, onSelectFramework }: Maste
               Format
             </h3>
             <ul className="space-y-3 font-sans text-sm">
-              {['Written Report', 'Dataset Summary', 'Code / Notebook'].map((domainName) => (
-                <li key={domainName}>
+              {domainOptions.map((label) => (
+                <li key={label}>
                   <label className="flex items-center gap-3 cursor-pointer group select-none">
                     <input
                       type="checkbox"
-                      checked={domains[domainName]}
-                      onChange={() => handleDomainChange(domainName)}
+                      checked={selectedDomains.has(label)}
+                      onChange={() => setSelectedDomains((prev) => toggleIn(prev, label))}
                       className="appearance-none w-4 h-4 border-[0.5px] border-outline rounded-sm checked:bg-primary checked:border-primary transition-colors focus:ring-1 focus:ring-primary focus:ring-offset-1 focus:ring-offset-surface cursor-pointer"
                     />
                     <span
                       className={`transition-colors ${
-                        domains[domainName]
+                        selectedDomains.has(label)
                           ? 'text-primary font-semibold'
                           : 'text-on-surface group-hover:text-primary'
                       }`}
                     >
-                      {domainName}
+                      {label}
                     </span>
                   </label>
                 </li>
@@ -259,37 +247,7 @@ export default function MasterIndexView({ frameworks, onSelectFramework }: Maste
               )}
             </button>
             <button
-              onClick={() => {
-                setDisciplines({
-                  'Tourism Forecasting': false,
-                  'Environmental Data Analysis': false,
-                  'Sustainability Metrics': false,
-                  'Machine Learning Models': false,
-                  'Engineering Design Challenge': false,
-                });
-                setDomains({
-                  'Written Report': false,
-                  'Dataset Summary': false,
-                  'Code / Notebook': false,
-                });
-                setSearchQuery('');
-                setAppliedFilters({
-                  disciplines: {
-                    'Tourism Forecasting': false,
-                    'Environmental Data Analysis': false,
-                    'Sustainability Metrics': false,
-                    'Machine Learning Models': false,
-                    'Engineering Design Challenge': false,
-                  },
-                  domains: {
-                    'Written Report': false,
-                    'Dataset Summary': false,
-                    'Code / Notebook': false,
-                  },
-                  searchQuery: '',
-                });
-                setCurrentPage(1);
-              }}
+              onClick={handleReset}
               className="w-full text-center text-[11px] font-sans text-outline hover:text-primary hover:underline mt-2 cursor-pointer"
               id="sidebar-clear-btn"
             >
@@ -301,7 +259,7 @@ export default function MasterIndexView({ frameworks, onSelectFramework }: Maste
 
       {/* Main Index Area (md:col-span-9) */}
       <section className="col-span-1 md:col-span-9">
-        
+
         {/* Header Block */}
         <header className="mb-10">
           <h1 className="font-serif text-3xl md:text-4xl lg:text-5xl text-primary font-bold mb-4 leading-tight">
@@ -351,19 +309,19 @@ export default function MasterIndexView({ frameworks, onSelectFramework }: Maste
           {paginatedFrameworks.length > 0 ? (
             paginatedFrameworks.map((item) => (
               <article
-                key={item.id}
-                onClick={() => onSelectFramework(item)}
+                key={item.slug}
+                onClick={() => navigate(`/resources/${item.slug}`)}
                 className="py-6 border-b-[0.5px] border-outline hover:bg-surface-container-lowest transition-colors duration-200 group flex flex-col md:flex-row gap-4 items-start md:items-center justify-between px-2 rounded-sm cursor-pointer"
-                id={`framework-row-${item.id}`}
+                id={`framework-row-${item.slug}`}
               >
                 {/* ID & Title */}
                 <div className="flex-1 pr-6">
                   <div className="flex items-center gap-3 mb-1.5 flex-wrap">
                     <span className="font-mono text-[10px] leading-[14px] uppercase tracking-widest border-[0.5px] border-secondary text-secondary bg-surface px-2 py-0.5 rounded-sm">
-                      {item.id}
+                      {item.slug}
                     </span>
-                    <span className={`font-mono text-[10px] leading-[14px] uppercase tracking-widest px-2 py-0.5 rounded-sm ${statusTags[item.status]}`}>
-                      {item.status}
+                    <span className={`font-mono text-[10px] leading-[14px] uppercase tracking-widest px-2 py-0.5 rounded-sm ${badgeTags[item.badge] ?? badgeTags.Standard}`}>
+                      {item.badge}
                     </span>
                     <span className="font-mono text-[10px] text-outline font-medium tracking-wide">
                       {item.discipline}
@@ -387,13 +345,13 @@ export default function MasterIndexView({ frameworks, onSelectFramework }: Maste
                       {item.lastUpdated}
                     </span>
                   </div>
-                  
+
                   {/* Immediate Download trigger */}
                   <button
                     onClick={(e) => handleRowDownload(e, item)}
                     className="w-8 h-8 flex items-center justify-center rounded-full border-[0.5px] border-outline text-outline hover:border-primary hover:text-primary hover:bg-surface-container-low transition-all flex-shrink-0 cursor-pointer"
-                    title={item.fileUrl ? `Download ${item.id} Source File` : `Export ${item.id} Metadata`}
-                    id={`download-row-btn-${item.id}`}
+                    title={item.fileUrl ? `Download ${item.slug} Source File` : `Export ${item.slug} Metadata`}
+                    id={`download-row-btn-${item.slug}`}
                   >
                     <Download className="w-4 h-4 stroke-[1.5]" />
                   </button>
@@ -420,12 +378,12 @@ export default function MasterIndexView({ frameworks, onSelectFramework }: Maste
             <ChevronLeft className="w-4 h-4" />
             Previous Set
           </button>
-          
+
           <div className="font-sans text-xs text-on-surface-variant">
             Displaying {(currentPage - 1) * itemsPerPage + 1}-
             {Math.min(currentPage * itemsPerPage, filteredFrameworks.length)} of {filteredFrameworks.length} records
           </div>
-          
+
           <button
             onClick={() => handlePageChange(currentPage + 1)}
             disabled={currentPage === totalPages}
