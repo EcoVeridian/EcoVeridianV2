@@ -7,7 +7,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArticleDoc } from '../types';
 import { useFrameworks } from '../content/ContentContext';
-import { ArrowLeft, ArrowRight, Download, FileText, Check, Award, Copy, Loader2, Sparkles, Library } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Check, Award, Copy, Sparkles, Library, Ban } from 'lucide-react';
 
 interface ArticleReaderProps {
   article: ArticleDoc;
@@ -15,92 +15,11 @@ interface ArticleReaderProps {
 }
 
 export default function ArticleReader({ article, onClose }: ArticleReaderProps) {
-  const [downloading, setDownloading] = useState(false);
-  const [downloadStep, setDownloadStep] = useState('');
-  const [downloadFinished, setDownloadFinished] = useState(false);
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
   const frameworks = useFrameworks();
   const linkedResource = article.linkedResourceSlug
     ? frameworks.find((f) => f.slug === article.linkedResourceSlug) ?? null
     : null;
-
-  const simulatePDFDownload = () => {
-    setDownloading(true);
-    setDownloadFinished(false);
-    const steps = [
-      'Preparing report package...',
-      'Compiling article sections and figures...',
-      'Generating metadata and references...',
-      'Finalizing download file...',
-    ];
-
-    let currentStep = 0;
-    setDownloadStep(steps[0]);
-
-    const interval = setInterval(() => {
-      currentStep++;
-      if (currentStep < steps.length) {
-        setDownloadStep(steps[currentStep]);
-      } else {
-        clearInterval(interval);
-        setDownloading(false);
-        setDownloadFinished(true);
-        
-        // Actually generate a simple text/plain file with the article contents!
-        const content = `
-=========================================
-ECOVERIDIAN REPORT
-Volume IV / Issue 09 — Grounded in Inquiry
-=========================================
-
-Title: ${article.title}
-Author: ${article.author}
-Category: ${article.category}
-Read Time: ${article.readTime}
-
------------------------------------------
-ABSTRACT
------------------------------------------
-${article.abstract}
-
------------------------------------------
-INTRODUCTION
------------------------------------------
-${article.introduction}
-
------------------------------------------
-METHODOLOGY
------------------------------------------
-${article.methodologyText}
-
------------------------------------------
-ANALYSIS & DISCUSSIONS
------------------------------------------
-${article.analysisText}
-
------------------------------------------
-REFERENCES
------------------------------------------
-${article.references.map((r, i) => `[${i + 1}] ${r}`).join('\n')}
-
-=========================================
-OFFICIAL CITATION RECORD
-EcoVeridian Reference Copy
-EcoVeridian Publication ID: EV-${article.slug}-2026
-=========================================
-`;
-        const blob = new Blob([content], { type: 'text/plain' });
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = `${article.title.toLowerCase().replace(/[^a-z0-9]+/g, '_')}_scholarly_report.txt`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(url);
-      }
-    }, 1000);
-  };
 
   const copyToClipboard = (text: string, index: number) => {
     navigator.clipboard.writeText(text);
@@ -189,41 +108,12 @@ EcoVeridian Publication ID: EV-${article.slug}-2026
                 <ArrowRight className="w-4 h-4" />
               </Link>
             ) : (
-              <button
-                onClick={simulatePDFDownload}
-                disabled={downloading}
-                className="w-full py-3 bg-primary text-on-primary font-mono text-xs uppercase tracking-widest hover:bg-primary-container hover:text-on-primary transition-all flex items-center justify-center gap-3 cursor-pointer disabled:opacity-50"
-                id="download-citation-btn"
+              <div
+                className="w-full py-3 bg-surface-container-low border-[0.5px] border-dashed border-outline-variant text-on-surface-variant font-mono text-xs uppercase tracking-widest flex items-center justify-center gap-3"
+                id="no-resource-linked"
               >
-                {downloading ? (
-                  <>
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                    Compiling...
-                  </>
-                ) : (
-                  <>
-                    <Download className="w-4 h-4" />
-                    Download Scholarly PDF
-                  </>
-                )}
-              </button>
-            )}
-
-            {!article.linkedResourceSlug && downloading && (
-              <div className="mt-4 animate-pulse">
-                <div className="w-full bg-surface-container-high h-[4px] rounded-full overflow-hidden">
-                  <div className="bg-secondary h-full w-[40%] animate-[shimmer_1.5s_infinite]" />
-                </div>
-                <p className="font-sans text-[11px] text-secondary italic mt-2 leading-relaxed">
-                  {downloadStep}
-                </p>
-              </div>
-            )}
-
-            {!article.linkedResourceSlug && downloadFinished && (
-              <div className="mt-4 p-3 bg-primary-fixed text-on-primary-fixed border border-primary/20 rounded-[2px] flex items-center gap-2 text-xs font-sans animate-fade-in">
-                <Check className="w-4 h-4 text-primary flex-shrink-0" />
-                <span>Typeset report successfully generated & downloaded! Check downloads folder.</span>
+                <Ban className="w-4 h-4" />
+                No Resource Linked Yet
               </div>
             )}
 
