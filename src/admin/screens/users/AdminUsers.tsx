@@ -14,7 +14,7 @@ import {
   serverTimestamp,
 } from 'firebase/firestore';
 import { Link } from 'react-router-dom';
-import { Loader2, AlertTriangle, Users, ShieldCheck, MailPlus, Trash2, Lock } from 'lucide-react';
+import { Loader2, AlertTriangle, Users, ShieldCheck, MailPlus, Trash2, Lock, Pencil, Check, X } from 'lucide-react';
 import { adminDb } from '../../lib/firebaseAdmin';
 import { useAuth } from '../../AuthContext';
 import { AdminDoc, AdminInviteDoc, AdminRole, RoleDoc } from '../../../types';
@@ -40,6 +40,8 @@ export default function AdminUsers() {
   const [toastVisible, setToastVisible] = useState(false);
   const [removeTarget, setRemoveTarget] = useState<AdminRow | null>(null);
   const [formError, setFormError] = useState<string | null>(null);
+  const [editingName, setEditingName] = useState(false);
+  const [nameDraft, setNameDraft] = useState('');
 
   const isOwner = admin?.role === 'owner';
   const canManage = can('users');
@@ -153,6 +155,28 @@ export default function AdminUsers() {
     }
   };
 
+  const startEditName = (row: AdminRow) => {
+    setNameDraft(row.displayName);
+    setEditingName(true);
+  };
+
+  const handleSaveName = async () => {
+    const name = nameDraft.trim();
+    if (!user || !name) return;
+    setBusy(true);
+    try {
+      const db = adminDb();
+      await updateDoc(doc(db, 'admins', user.uid), { displayName: name });
+      toast('Name updated');
+      setEditingName(false);
+      await refresh();
+    } catch (err) {
+      setState({ phase: 'error', message: err instanceof Error ? err.message : 'Failed to update name' });
+    } finally {
+      setBusy(false);
+    }
+  };
+
   if (state.phase === 'loading') {
     return (
       <div className="flex items-center justify-center py-16">
@@ -208,10 +232,50 @@ export default function AdminUsers() {
                 className="border-[0.5px] border-outline-variant bg-surface-container-lowest p-4 rounded-[2px] flex items-center justify-between gap-4"
               >
                 <div className="min-w-0">
-                  <p className="font-sans text-sm font-semibold text-primary truncate">
-                    {row.displayName}
-                    {isSelf && <span className="text-outline font-normal"> (you)</span>}
-                  </p>
+                  {isSelf && editingName ? (
+                    <div className="flex items-center gap-1.5 mb-1">
+                      <input
+                        autoFocus
+                        value={nameDraft}
+                        onChange={(e) => setNameDraft(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') handleSaveName();
+                          if (e.key === 'Escape') setEditingName(false);
+                        }}
+                        className="font-sans text-sm font-semibold text-primary bg-transparent border-[0.5px] border-primary rounded-[2px] px-1.5 py-0.5 min-w-0 focus:outline-none"
+                      />
+                      <button
+                        onClick={handleSaveName}
+                        disabled={busy || !nameDraft.trim()}
+                        className="p-1 text-primary hover:text-secondary transition-colors cursor-pointer flex-shrink-0"
+                        title="Save name"
+                      >
+                        <Check className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={() => setEditingName(false)}
+                        disabled={busy}
+                        className="p-1 text-on-surface-variant hover:text-error transition-colors cursor-pointer flex-shrink-0"
+                        title="Cancel"
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
+                    </div>
+                  ) : (
+                    <p className="font-sans text-sm font-semibold text-primary truncate flex items-center gap-1.5">
+                      {row.displayName}
+                      {isSelf && <span className="text-outline font-normal"> (you)</span>}
+                      {isSelf && (
+                        <button
+                          onClick={() => startEditName(row)}
+                          className="p-0.5 text-on-surface-variant hover:text-primary transition-colors cursor-pointer flex-shrink-0"
+                          title="Edit your display name"
+                        >
+                          <Pencil className="w-3 h-3" />
+                        </button>
+                      )}
+                    </p>
+                  )}
                   <p className="font-sans text-xs text-on-surface-variant truncate">{row.email}</p>
                 </div>
                 <div className="flex items-center gap-3 flex-shrink-0">

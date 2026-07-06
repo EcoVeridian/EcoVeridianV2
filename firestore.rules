@@ -134,7 +134,15 @@ service cloud.firestore {
       // Nobody can modify or remove an owner account through the client —
       // not even another owner (prevents both takeovers and self-lockout).
       allow delete: if hasPerm('users') && resource.data.role != 'owner';
-      allow update: if hasPerm('users') && resource.data.role != 'owner' && grantedRoleAllowed();
+      allow update: if (hasPerm('users') && resource.data.role != 'owner' && grantedRoleAllowed())
+        // Self-service rename: any signed-in admin (including an owner) may
+        // change only their own displayName — email/role stay untouched.
+        || (
+          isSignedIn() && request.auth.uid == uid
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['displayName'])
+          && request.resource.data.displayName is string
+          && request.resource.data.displayName.size() > 0
+        );
       // Self-claim: the bootstrap owner email may create its own owner doc;
       // invitees may create their own doc with exactly the invited role.
       allow create: if (hasPerm('users') && grantedRoleAllowed())
