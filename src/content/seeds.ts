@@ -326,6 +326,7 @@ export const SEED_TEAM: TeamMemberDoc[] = [
     links: [
       { label: 'LinkedIn', url: 'https://www.linkedin.com/in/risith-kankanamge/' },
       { label: 'Email', url: 'mailto:risithcha@gmail.com' },
+      { label: 'GitHub', url: 'https://github.com/risithcha' },
     ],
     visible: true,
     order: 0,
