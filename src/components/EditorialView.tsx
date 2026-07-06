@@ -3,13 +3,14 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { Fragment } from 'react';
+import { Fragment, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowUpRight } from 'lucide-react';
+import { ArrowUpRight, X } from 'lucide-react';
 import { ArticleDoc } from '../types';
 import { useArticles, usePageHome } from '../content/ContentContext';
 
 export default function EditorialView() {
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const navigate = useNavigate();
   const articles = useArticles();
   const page = usePageHome();
@@ -102,8 +103,16 @@ export default function EditorialView() {
         <div className="max-w-[1280px] mx-auto">
 
           <div className="flex items-center justify-between mb-12 border-b-[0.5px] border-outline-variant pb-4">
-            <h2 className="font-serif text-3xl font-bold text-primary">{page.archiveHeading}</h2>
-            <span className="font-mono text-xs text-secondary uppercase tracking-wider font-semibold">
+            <div className="flex items-center gap-4">
+              <h2 className="font-serif text-3xl font-bold text-primary">{page.archiveHeading}</h2>
+              <button
+                onClick={() => setIsModalOpen(true)}
+                className="font-mono text-[10px] px-3 py-1.5 bg-primary/5 text-primary hover:bg-primary hover:text-on-primary border-[0.5px] border-primary transition-colors cursor-pointer uppercase tracking-widest font-semibold rounded-[2px]"
+              >
+                View All
+              </button>
+            </div>
+            <span className="font-mono text-xs text-secondary uppercase tracking-wider font-semibold hidden md:block">
               {page.archiveKicker}
             </span>
           </div>
@@ -182,6 +191,50 @@ export default function EditorialView() {
           </div>
         </div>
       </section>
+
+      {/* All Archives Modal */}
+      {isModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 md:p-8 bg-background/80 backdrop-blur-md animate-fade-in">
+          <div className="bg-surface w-full max-w-5xl h-full max-h-[85vh] overflow-hidden border-[0.5px] border-outline-variant shadow-2xl rounded-[2px] flex flex-col">
+            <div className="bg-surface/95 p-6 border-b-[0.5px] border-outline-variant flex justify-between items-center z-10 shrink-0">
+              <div>
+                <h2 className="font-serif text-2xl md:text-3xl font-bold text-primary">All Curated Archives</h2>
+                <p className="font-sans text-sm text-on-surface-variant mt-1">Explore our complete collection of research and articles.</p>
+              </div>
+              <button 
+                onClick={() => setIsModalOpen(false)}
+                className="p-2 text-on-surface-variant hover:text-primary hover:bg-surface-container transition-colors rounded-full"
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+            <div className="p-6 md:p-8 overflow-y-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 bg-surface-container-low">
+              {articles.map((article) => (
+                <article
+                  key={article.slug}
+                  onClick={() => openArticle(article)}
+                  className="border-[0.5px] border-outline-variant bg-surface p-6 hover:bg-surface-container hover:border-primary transition-all duration-300 cursor-pointer group flex flex-col justify-between min-h-[200px]"
+                >
+                  <div>
+                    <h3 className="font-serif text-xl font-bold text-primary mb-3 group-hover:text-secondary transition-colors leading-snug">
+                      {article.title}
+                    </h3>
+                    <p className="font-sans text-xs text-on-surface-variant leading-relaxed line-clamp-3 mb-4">
+                      {article.excerpt}
+                    </p>
+                  </div>
+                  <div className="pt-4 border-t-[0.5px] border-outline-variant/50 font-sans text-[11px] text-outline flex justify-between items-center">
+                    <span>Read Time: {article.readTime}</span>
+                    <span className="font-mono text-[10px] uppercase font-bold text-secondary group-hover:translate-x-0.5 transition-transform flex items-center gap-1">
+                      READ <ArrowUpRight className="w-3 h-3" />
+                    </span>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
