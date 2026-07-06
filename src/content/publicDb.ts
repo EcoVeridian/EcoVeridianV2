@@ -89,8 +89,9 @@ export async function fetchTaxonomies<T>(): Promise<Record<string, T> | null> {
 /**
  * File a visitor inquiry. The doc shape must match the strict create rule in
  * firestore.rules exactly ('website' is the spam honeypot — must stay '').
- * Returns false when Firestore is unavailable so the caller can decide
- * whether the email relay alone counts as success.
+ * Returns the new doc's id (a real, lookup-able reference) on success, or
+ * null when Firestore is unavailable so the caller can decide whether the
+ * email relay alone counts as success.
  */
 export async function submitInquiry(data: {
   name: string;
@@ -99,19 +100,19 @@ export async function submitInquiry(data: {
   inquiryType: string;
   details: string;
   website: string;
-}): Promise<boolean> {
+}): Promise<string | null> {
   const db = liteDb();
-  if (!db) return false;
+  if (!db) return null;
   try {
-    await addDoc(collection(db, 'inquiries'), {
+    const ref = await addDoc(collection(db, 'inquiries'), {
       ...data,
       status: 'unread',
       createdAt: serverTimestamp(),
     });
-    return true;
+    return ref.id;
   } catch (err) {
     warn('inquiries (create)', err);
-    return false;
+    return null;
   }
 }
 

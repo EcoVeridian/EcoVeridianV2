@@ -35,12 +35,9 @@ export default function SubmissionView() {
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
-  const buildReceipt = () => {
-    const transactionHash = Array.from({ length: 32 }, () =>
-      Math.floor(Math.random() * 16).toString(16)
-    ).join('').toUpperCase();
+  const buildReceipt = (referenceId: string | null) => {
     return `EcoVeridian Inquiry Receipt
-Reference: EV-${transactionHash}
+Reference: ${referenceId ? `EV-${referenceId}` : 'Sent by email only — no inbox record'}
 Submitted: ${new Date().toLocaleString()}
 
 Name: ${form.investigatorName}
@@ -59,7 +56,7 @@ Thanks for reaching out. ${page.responseNote}`;
 
     // Bots that filled the honeypot get a fake success and no processing.
     if (website.trim() !== '') {
-      setReceipt(buildReceipt());
+      setReceipt(buildReceipt(null));
       return;
     }
 
@@ -72,7 +69,7 @@ Thanks for reaching out. ${page.responseNote}`;
     }, 600);
 
     // 1. Store in the team's inbox (Firestore) — the primary record.
-    const stored = await submitInquiry({
+    const inquiryId = await submitInquiry({
       name: form.investigatorName,
       organization: form.institution,
       email: form.returnRelay,
@@ -110,8 +107,8 @@ Thanks for reaching out. ${page.responseNote}`;
     clearTimeout(stepTimer);
     setSubmitStep('Preparing confirmation receipt...');
 
-    if (stored || emailed) {
-      setReceipt(buildReceipt());
+    if (inquiryId || emailed) {
+      setReceipt(buildReceipt(inquiryId));
     } else {
       setSubmitError(
         `We could not send your inquiry right now. Please try again, or email us directly at ${settings.contactEmail}.`

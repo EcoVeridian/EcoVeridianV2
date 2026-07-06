@@ -69,6 +69,7 @@ export interface ArticleDoc {
   category: string;
   author: string;
   readTime: string;
+  publishedDate: string; // Display string shown on the article page, e.g. 'June 2026'
   excerpt: string;
   imageUrl: string;
   imagePath: string; // Storage path when uploaded via admin; '' for external URLs
@@ -78,6 +79,7 @@ export interface ArticleDoc {
   methodologyText: string;
   analysisText: string;
   references: string[];
+  linkedResourceSlug: string; // frameworks/{slug} doc id to link to in the Resource Hub; '' for none
   publishStatus: PublishStatus;
   order: number;
 }

@@ -15,9 +15,21 @@ interface SelectFieldProps {
   options: Option[];
   hint?: string;
   id?: string;
+  /** Adds a selectable "None" option (value '') instead of a disabled placeholder. */
+  allowEmpty?: boolean;
+  emptyLabel?: string;
 }
 
-export default function SelectField({ label, value, onChange, options, hint, id }: SelectFieldProps) {
+export default function SelectField({
+  label,
+  value,
+  onChange,
+  options,
+  hint,
+  id,
+  allowEmpty,
+  emptyLabel = 'None',
+}: SelectFieldProps) {
   const inputId = id ?? `select-${label.toLowerCase().replace(/\s+/g, '-')}`;
   return (
     <div className="flex flex-col">
@@ -36,9 +48,13 @@ export default function SelectField({ label, value, onChange, options, hint, id 
           backgroundSize: '1.25em 1.25em',
         }}
       >
-        <option value="" disabled>
-          Select...
-        </option>
+        {allowEmpty ? (
+          <option value="">{emptyLabel}</option>
+        ) : (
+          <option value="" disabled>
+            Select...
+          </option>
+        )}
         {options.map((opt) => (
           <option key={opt.value} value={opt.value}>
             {opt.label}

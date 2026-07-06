@@ -5,12 +5,13 @@
 
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
+import { doc, getDoc, setDoc, serverTimestamp, collection, getDocs } from 'firebase/firestore';
 import { Loader2, AlertTriangle, ChevronLeft } from 'lucide-react';
 import { adminDb } from '../../lib/firebaseAdmin';
-import { ArticleDoc, PublishStatus } from '../../../types';
+import { ArticleDoc, FrameworkDoc, PublishStatus } from '../../../types';
 import Field from '../../components/Field';
 import TextArea from '../../components/TextArea';
+import SelectField from '../../components/SelectField';
 import StringListEditor from '../../components/StringListEditor';
 import PublishBar from '../../components/PublishBar';
 import SaveToast from '../../components/SaveToast';
@@ -21,6 +22,7 @@ const blankArticle = (): ArticleDoc => ({
   category: '',
   author: '',
   readTime: '',
+  publishedDate: '',
   excerpt: '',
   imageUrl: '',
   imagePath: '',
@@ -30,6 +32,7 @@ const blankArticle = (): ArticleDoc => ({
   methodologyText: '',
   analysisText: '',
   references: [],
+  linkedResourceSlug: '',
   publishStatus: 'draft',
   order: Date.now(),
 });
@@ -49,6 +52,28 @@ export default function ArticleEdit() {
   const [busy, setBusy] = useState(false);
   const [toastVisible, setToastVisible] = useState(false);
   const [slugError, setSlugError] = useState<string | null>(null);
+  const [resourceOptions, setResourceOptions] = useState<{ value: string; label: string }[]>([]);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const db = adminDb();
+        const snap = await getDocs(collection(db, 'frameworks'));
+        if (cancelled) return;
+        setResourceOptions(
+          snap.docs
+            .map((d) => d.data() as FrameworkDoc)
+            .map((f) => ({ value: f.slug, label: `${f.slug} — ${f.title}` })),
+        );
+      } catch {
+        /* resource picker is optional; leave options empty on failure */
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   useEffect(() => {
     if (createMode || !routeSlug) return;
@@ -166,7 +191,15 @@ export default function ArticleEdit() {
           <Field label="Category" value={form.category} onChange={(v) => update('category', v)} />
           <Field label="Author" value={form.author} onChange={(v) => update('author', v)} />
         </div>
-        <Field label="Read Time" value={form.readTime} onChange={(v) => update('readTime', v)} />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <Field label="Read Time" value={form.readTime} onChange={(v) => update('readTime', v)} />
+          <Field
+            label="Published Date"
+            value={form.publishedDate}
+            onChange={(v) => update('publishedDate', v)}
+            hint="Free text shown on the article page, e.g. 'June 2026'."
+          />
+        </div>
         <TextArea label="Excerpt" value={form.excerpt} onChange={(v) => update('excerpt', v)} rows={2} />
 
         <div>
@@ -206,6 +239,15 @@ export default function ArticleEdit() {
           values={form.references}
           onChange={(v) => update('references', v)}
           addLabel="+ Add Reference"
+        />
+        <SelectField
+          label="Linked Resource"
+          value={form.linkedResourceSlug}
+          onChange={(v) => update('linkedResourceSlug', v)}
+          options={resourceOptions}
+          allowEmpty
+          emptyLabel="None — no linked resource"
+          hint="Points the article's Scholarly Instruments panel at a Resource Hub entry."
         />
       </div>
 

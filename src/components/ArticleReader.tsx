@@ -4,8 +4,10 @@
  */
 
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { ArticleDoc } from '../types';
-import { ArrowLeft, Download, FileText, Check, Award, Copy, Loader2, Sparkles } from 'lucide-react';
+import { useFrameworks } from '../content/ContentContext';
+import { ArrowLeft, ArrowRight, Download, FileText, Check, Award, Copy, Loader2, Sparkles, Library } from 'lucide-react';
 
 interface ArticleReaderProps {
   article: ArticleDoc;
@@ -17,6 +19,10 @@ export default function ArticleReader({ article, onClose }: ArticleReaderProps) 
   const [downloadStep, setDownloadStep] = useState('');
   const [downloadFinished, setDownloadFinished] = useState(false);
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
+  const frameworks = useFrameworks();
+  const linkedResource = article.linkedResourceSlug
+    ? frameworks.find((f) => f.slug === article.linkedResourceSlug) ?? null
+    : null;
 
   const simulatePDFDownload = () => {
     setDownloading(true);
@@ -124,9 +130,11 @@ EcoVeridian Publication ID: EV-${article.slug}-2026
           <span className="font-mono text-xs px-2 py-1 bg-surface border-[0.5px] border-outline text-on-surface-variant uppercase">
             ID: ECO-{article.slug}
           </span>
-          <span className="font-mono text-xs text-outline-variant ml-auto">
-            Published June 2026
-          </span>
+          {article.publishedDate && (
+            <span className="font-mono text-xs text-outline-variant ml-auto">
+              Published {article.publishedDate}
+            </span>
+          )}
         </div>
 
         <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl text-primary font-bold tracking-tight leading-tight mb-6">
@@ -170,26 +178,38 @@ EcoVeridian Publication ID: EV-${article.slug}-2026
               Scholarly Instruments
             </h4>
             
-            <button
-              onClick={simulatePDFDownload}
-              disabled={downloading}
-              className="w-full py-3 bg-primary text-on-primary font-mono text-xs uppercase tracking-widest hover:bg-primary-container hover:text-on-primary transition-all flex items-center justify-center gap-3 cursor-pointer disabled:opacity-50"
-              id="download-citation-btn"
-            >
-              {downloading ? (
-                <>
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                  Compiling...
-                </>
-              ) : (
-                <>
-                  <Download className="w-4 h-4" />
-                  Download Scholarly PDF
-                </>
-              )}
-            </button>
+            {article.linkedResourceSlug ? (
+              <Link
+                to={`/resources/${article.linkedResourceSlug}`}
+                className="w-full py-3 bg-primary text-on-primary font-mono text-xs uppercase tracking-widest hover:bg-primary-container hover:text-on-primary transition-all flex items-center justify-center gap-3 cursor-pointer"
+                id="view-resource-btn"
+              >
+                <Library className="w-4 h-4" />
+                {linkedResource ? 'View in Resource Hub' : 'Open Linked Resource'}
+                <ArrowRight className="w-4 h-4" />
+              </Link>
+            ) : (
+              <button
+                onClick={simulatePDFDownload}
+                disabled={downloading}
+                className="w-full py-3 bg-primary text-on-primary font-mono text-xs uppercase tracking-widest hover:bg-primary-container hover:text-on-primary transition-all flex items-center justify-center gap-3 cursor-pointer disabled:opacity-50"
+                id="download-citation-btn"
+              >
+                {downloading ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Compiling...
+                  </>
+                ) : (
+                  <>
+                    <Download className="w-4 h-4" />
+                    Download Scholarly PDF
+                  </>
+                )}
+              </button>
+            )}
 
-            {downloading && (
+            {!article.linkedResourceSlug && downloading && (
               <div className="mt-4 animate-pulse">
                 <div className="w-full bg-surface-container-high h-[4px] rounded-full overflow-hidden">
                   <div className="bg-secondary h-full w-[40%] animate-[shimmer_1.5s_infinite]" />
@@ -200,7 +220,7 @@ EcoVeridian Publication ID: EV-${article.slug}-2026
               </div>
             )}
 
-            {downloadFinished && (
+            {!article.linkedResourceSlug && downloadFinished && (
               <div className="mt-4 p-3 bg-primary-fixed text-on-primary-fixed border border-primary/20 rounded-[2px] flex items-center gap-2 text-xs font-sans animate-fade-in">
                 <Check className="w-4 h-4 text-primary flex-shrink-0" />
                 <span>Typeset report successfully generated & downloaded! Check downloads folder.</span>
