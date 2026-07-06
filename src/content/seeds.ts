@@ -389,7 +389,7 @@ export const SEED_TAXONOMIES: Record<string, TaxonomyDoc> = {
 };
 
 export const SEED_PAGE_HOME: PageHomeDoc = {
-  badges: ['Student-Led Research Hub', 'TSA Nationals Project'],
+  badges: ['Student-Led Research Hub'],
   heading: 'Turning Competition-Grade Data Science\nInto Real Help',
   tagline: 'EcoVeridian is a student research team offering forecasting and data analysis support to organizations. We built this work through our TSA Data Science and Analytics project, then expanded it into a practical research hub partners can use.',
   ctaLabel: 'Read The Research',
