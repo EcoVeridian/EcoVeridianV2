@@ -134,6 +134,14 @@ export default function FrameworkDrawer({ framework, onClose }: FrameworkDrawerP
     Standard: 'bg-secondary-container/30 text-on-secondary-container border border-secondary/15',
   };
 
+  // Verified-sample button: label and (optional) link are admin-controlled per
+  // resource, mirroring the "Download Original Document" (fileUrl) button.
+  const sampleLabel = framework.sampleLabel?.trim() || 'Download Verified Sample (.CSV)';
+  const sampleButtonClass =
+    framework.format === 'PDF'
+      ? 'w-full py-3 border-[0.5px] border-outline text-primary hover:bg-surface-container-low font-mono text-xs uppercase tracking-widest flex items-center justify-center gap-3 rounded-[2px] transition-colors cursor-pointer disabled:opacity-60'
+      : 'w-full py-3 bg-primary text-on-primary hover:bg-primary-container hover:text-on-primary font-mono text-xs uppercase tracking-widest flex items-center justify-center gap-3 rounded-[2px] transition-colors cursor-pointer disabled:opacity-60';
+
   return (
     <div className="fixed inset-0 z-50 flex justify-end bg-black/40 backdrop-blur-xs animate-fade-in">
       {/* Backdrop area click closes drawer */}
@@ -284,30 +292,38 @@ export default function FrameworkDrawer({ framework, onClose }: FrameworkDrawerP
             </div>
           )}
 
-          <button
-            onClick={handleDownload}
-            disabled={downloading}
-            className={
-              framework.format === 'PDF'
-                ? 'w-full py-3 border-[0.5px] border-outline text-primary hover:bg-surface-container-low font-mono text-xs uppercase tracking-widest flex items-center justify-center gap-3 rounded-[2px] transition-colors cursor-pointer disabled:opacity-60'
-                : 'w-full py-3 bg-primary text-on-primary hover:bg-primary-container hover:text-on-primary font-mono text-xs uppercase tracking-widest flex items-center justify-center gap-3 rounded-[2px] transition-colors cursor-pointer disabled:opacity-60'
-            }
-            id="drawer-download-btn"
-          >
-            {downloading ? (
-              <>
-                <Loader2 className="w-4 h-4 animate-spin" />
-                Synchronizing Binary Streams...
-              </>
-            ) : (
-              <>
-                <Download className="w-4 h-4" />
-                Download Verified Sample (.CSV)
-              </>
-            )}
-          </button>
+          {framework.sampleUrl ? (
+            <a
+              href={framework.sampleUrl}
+              download
+              className={sampleButtonClass}
+              id="drawer-download-btn"
+            >
+              <Download className="w-4 h-4" />
+              {sampleLabel}
+            </a>
+          ) : (
+            <button
+              onClick={handleDownload}
+              disabled={downloading}
+              className={sampleButtonClass}
+              id="drawer-download-btn"
+            >
+              {downloading ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  Synchronizing Binary Streams...
+                </>
+              ) : (
+                <>
+                  <Download className="w-4 h-4" />
+                  {sampleLabel}
+                </>
+              )}
+            </button>
+          )}
 
-          {downloadFinished && (
+          {!framework.sampleUrl && downloadFinished && (
             <div className="mt-3 p-3 bg-primary-fixed text-on-primary-fixed border border-primary/10 rounded-sm text-xs font-sans text-center flex items-center justify-center gap-2 animate-fade-in">
               <Check className="w-4 h-4 text-primary" />
               <span>Full sample matrix successfully exported!</span>

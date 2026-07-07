@@ -33,6 +33,8 @@ const blankFramework = (): FrameworkDoc => ({
   reportContent: [],
   fileUrl: '',
   filePath: '',
+  sampleUrl: '',
+  sampleLabel: '',
   publishStatus: 'draft',
   order: Date.now(),
 });
@@ -100,7 +102,10 @@ export default function FrameworkEdit() {
           setState({ phase: 'error', message: `No resource found with slug "${routeSlug}".` });
           return;
         }
-        const data = snap.data() as FrameworkDoc;
+        // Backfill fields added after this doc was created (e.g. sampleUrl,
+        // sampleLabel) so their inputs stay controlled and the dirty check has
+        // a stable baseline.
+        const data = { ...blankFramework(), ...(snap.data() as FrameworkDoc) };
         setLoaded(data);
         setForm(data);
         setState({ phase: 'ready' });
@@ -233,11 +238,26 @@ export default function FrameworkEdit() {
           <Field label="Frequency" value={form.frequency} onChange={(v) => update('frequency', v)} />
         </div>
         <Field
-          label="File URL"
+          label="Original Document URL"
           value={form.fileUrl}
           onChange={(v) => update('fileUrl', v)}
-          hint="Optional: URL or /documents/... path of the source file"
+          hint="Optional: URL or /documents/... path for the 'Download Original Document' button"
         />
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <Field
+            label="Verified Sample Button Label"
+            value={form.sampleLabel}
+            onChange={(v) => update('sampleLabel', v)}
+            hint="Optional: defaults to 'Download Verified Sample (.CSV)'"
+          />
+          <Field
+            label="Verified Sample URL"
+            value={form.sampleUrl}
+            onChange={(v) => update('sampleUrl', v)}
+            hint="Optional: URL or /documents/... path; falls back to a CSV generated from the sample table"
+          />
+        </div>
 
         <TableEditor label="Sample Table" value={form.sampleTable} onChange={(v) => update('sampleTable', v)} />
         <SectionListEditor
