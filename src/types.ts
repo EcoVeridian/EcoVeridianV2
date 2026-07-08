@@ -100,6 +100,11 @@ export interface FrameworkDoc {
   reportContent: Array<{ heading: string; body: string }>;
   fileUrl: string;
   filePath: string;
+  // "Download Verified Sample" button overrides. sampleUrl empty → the button
+  // generates a CSV from sampleTable as before; sampleLabel empty → it shows
+  // the default "Download Verified Sample (.CSV)" text.
+  sampleUrl: string;
+  sampleLabel: string;
   publishStatus: PublishStatus;
   order: number;
 }
