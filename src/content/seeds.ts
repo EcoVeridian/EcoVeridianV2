@@ -341,6 +341,7 @@ export const SEED_TEAM: TeamMemberDoc[] = [
     links: [
       { label: 'LinkedIn', url: 'https://www.linkedin.com/in/santhosh-ilaiyaraja-77871436a/' },
       { label: 'Email', url: 'mailto:santhosh.ilaiyaraja21@gmail.com' },
+      { label: 'GitHub', url: 'https://github.com/Santhosh-Ilaiyaraja' },
     ],
     visible: true,
     order: 1,
@@ -355,6 +356,7 @@ export const SEED_TEAM: TeamMemberDoc[] = [
     links: [
       { label: 'LinkedIn', url: 'https://www.linkedin.com/in/ritvik-sujan-rajkumar' },
       { label: 'Email', url: 'mailto:rajkumarritvik1@gmail.com' },
+      { label: 'GitHub', url: 'https://github.com/rajkumarritvik' },
     ],
     visible: true,
     order: 2,
