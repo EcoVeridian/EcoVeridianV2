@@ -82,9 +82,14 @@ export default function TeamView() {
             {visibleInterns.map((intern) => (
               <li
                 key={intern.slug}
-                className="px-4 py-2.5 bg-surface-container-low border-[0.5px] border-outline-variant rounded-[2px] font-sans text-sm text-on-surface"
+                className="px-4 py-3 bg-surface-container-low border-[0.5px] border-outline-variant rounded-[2px]"
               >
-                {intern.name}
+                <p className="font-sans text-sm text-on-surface">{intern.name}</p>
+                {intern.role && (
+                  <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-secondary font-semibold mt-1.5">
+                    {intern.role}
+                  </p>
+                )}
               </li>
             ))}
           </ul>

@@ -6,10 +6,11 @@
 /**
  * Interns editor, shown beneath the team member list on /admin/team.
  *
- * Interns are name-only entries in the `interns` collection (doc id = slug
- * generated from the name at add time, so renaming never moves the doc). Edits
- * are batched locally and committed on Save: every remaining row is rewritten
- * with its array index as `order`, and rows removed since load are deleted.
+ * Interns are name + optional role entries in the `interns` collection (doc id
+ * = slug generated from the name at add time, so renaming never moves the doc).
+ * Edits are batched locally and committed on Save: every remaining row is
+ * rewritten with its array index as `order`, and rows removed since load are
+ * deleted.
  */
 
 import { useEffect, useState } from 'react';
@@ -25,7 +26,7 @@ import { adminDb } from '../../lib/firebaseAdmin';
 import { InternDoc } from '../../../types';
 import SaveToast from '../../components/SaveToast';
 
-type InternRow = Pick<InternDoc, 'slug' | 'name' | 'visible'>;
+type InternRow = Pick<InternDoc, 'slug' | 'name' | 'role' | 'visible'>;
 
 type LoadState = { phase: 'loading' } | { phase: 'ready' } | { phase: 'error'; message: string };
 
@@ -52,6 +53,7 @@ export default function InternsPanel() {
   const [loaded, setLoaded] = useState<InternRow[]>([]);
   const [rows, setRows] = useState<InternRow[]>([]);
   const [draftName, setDraftName] = useState('');
+  const [draftRole, setDraftRole] = useState('');
   const [state, setState] = useState<LoadState>({ phase: 'loading' });
   // Gates the editor: without a successful load, a save would write against an
   // unknown collection state.
@@ -70,7 +72,8 @@ export default function InternsPanel() {
         const docs = snap.docs
           .map((d) => d.data() as InternDoc)
           .sort((a, b) => a.order - b.order)
-          .map(({ slug, name, visible }) => ({ slug, name, visible }));
+          // role was added after the first interns shipped; older docs lack it.
+          .map(({ slug, name, role, visible }) => ({ slug, name, role: role ?? '', visible }));
         setLoaded(docs);
         setRows(docs);
         setEverLoaded(true);
@@ -93,8 +96,9 @@ export default function InternsPanel() {
     const name = draftName.trim();
     if (!name) return;
     const slug = uniqueSlug(name, new Set(rows.map((r) => r.slug)));
-    setRows((prev) => [...prev, { slug, name, visible: true }]);
+    setRows((prev) => [...prev, { slug, name, role: draftRole.trim(), visible: true }]);
     setDraftName('');
+    setDraftRole('');
   };
 
   const updateAt = (index: number, patch: Partial<InternRow>) => {
@@ -128,6 +132,7 @@ export default function InternsPanel() {
           {
             slug: row.slug,
             name: row.name.trim(),
+            role: row.role.trim(),
             visible: row.visible,
             order: index,
             updatedAt: serverTimestamp(),
@@ -143,7 +148,7 @@ export default function InternsPanel() {
       }
 
       await batch.commit();
-      const saved = rows.map((row) => ({ ...row, name: row.name.trim() }));
+      const saved = rows.map((row) => ({ ...row, name: row.name.trim(), role: row.role.trim() }));
       setRows(saved);
       setLoaded(saved);
       setState({ phase: 'ready' });
@@ -164,8 +169,8 @@ export default function InternsPanel() {
           Interns
         </h2>
         <p className="font-sans text-sm text-on-surface-variant mt-2 leading-relaxed max-w-xl">
-          Listed by name underneath the team members on the public Team page. Hidden interns are
-          kept here but not shown on the site.
+          Listed by name underneath the team members on the public Team page. The role is optional
+          and shown beneath the name. Hidden interns are kept here but not shown on the site.
         </p>
       </header>
 
@@ -192,12 +197,20 @@ export default function InternsPanel() {
             )}
 
             {rows.map((row, index) => (
-              <div key={row.slug} className="flex items-center gap-2">
+              <div key={row.slug} className="flex items-center gap-2 flex-wrap">
                 <input
                   value={row.name}
                   onChange={(e) => updateAt(index, { name: e.target.value })}
+                  placeholder="Name"
                   aria-label={`Intern ${index + 1} name`}
-                  className="flex-grow bg-transparent border-b-[0.5px] border-outline focus:outline-none focus:border-primary focus:bg-surface-container-low transition-all py-2 text-sm font-sans"
+                  className="flex-grow min-w-[160px] basis-0 bg-transparent border-b-[0.5px] border-outline focus:outline-none focus:border-primary focus:bg-surface-container-low transition-all py-2 text-sm font-sans placeholder:text-outline"
+                />
+                <input
+                  value={row.role}
+                  onChange={(e) => updateAt(index, { role: e.target.value })}
+                  placeholder="Role (optional)"
+                  aria-label={`Intern ${index + 1} role`}
+                  className="flex-grow min-w-[160px] basis-0 bg-transparent border-b-[0.5px] border-outline focus:outline-none focus:border-primary focus:bg-surface-container-low transition-all py-2 text-sm font-sans placeholder:text-outline"
                 />
                 <label className="flex items-center gap-2 cursor-pointer select-none flex-shrink-0 px-1">
                   <input
@@ -240,7 +253,7 @@ export default function InternsPanel() {
             ))}
           </div>
 
-          <div className="flex items-center gap-2 mt-5 max-w-2xl">
+          <div className="flex items-center gap-2 mt-5 max-w-2xl flex-wrap">
             <input
               value={draftName}
               onChange={(e) => setDraftName(e.target.value)}
@@ -252,7 +265,20 @@ export default function InternsPanel() {
               }}
               placeholder="Intern name"
               aria-label="New intern name"
-              className="flex-grow bg-transparent border-b-[0.5px] border-outline focus:outline-none focus:border-primary focus:bg-surface-container-low transition-all py-2 text-sm font-sans placeholder:text-outline"
+              className="flex-grow min-w-[160px] basis-0 bg-transparent border-b-[0.5px] border-outline focus:outline-none focus:border-primary focus:bg-surface-container-low transition-all py-2 text-sm font-sans placeholder:text-outline"
+            />
+            <input
+              value={draftRole}
+              onChange={(e) => setDraftRole(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  add();
+                }
+              }}
+              placeholder="Role (optional)"
+              aria-label="New intern role"
+              className="flex-grow min-w-[160px] basis-0 bg-transparent border-b-[0.5px] border-outline focus:outline-none focus:border-primary focus:bg-surface-container-low transition-all py-2 text-sm font-sans placeholder:text-outline"
             />
             <button
               type="button"

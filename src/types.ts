@@ -121,10 +121,12 @@ export interface TeamMemberDoc {
   order: number;
 }
 
-// Interns are listed by name only, beneath the team members on /team.
+// Interns are listed by name (and optional role) beneath the team members
+// on /team.
 export interface InternDoc {
   slug: string; // doc id, generated from the name when the intern is added
   name: string;
+  role: string; // display title, e.g. 'Research Intern'; '' to show none
   visible: boolean;
   order: number;
 }
