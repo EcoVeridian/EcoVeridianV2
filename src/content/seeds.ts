@@ -16,6 +16,7 @@ import {
   ArticleDoc,
   FrameworkDoc,
   TeamMemberDoc,
+  InternDoc,
   TaxonomyDoc,
   PageHomeDoc,
   PageAboutDoc,
@@ -370,6 +371,9 @@ export const SEED_TEAM: TeamMemberDoc[] = [
     order: 2,
   },
 ];
+
+// Interns are added from /admin/team; there is no built-in list to fall back to.
+export const SEED_INTERNS: InternDoc[] = [];
 
 export const SEED_TAXONOMIES: Record<string, TaxonomyDoc> = {
   disciplines: {

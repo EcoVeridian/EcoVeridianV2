@@ -121,6 +121,14 @@ export interface TeamMemberDoc {
   order: number;
 }
 
+// Interns are listed by name only, beneath the team members on /team.
+export interface InternDoc {
+  slug: string; // doc id, generated from the name when the intern is added
+  name: string;
+  visible: boolean;
+  order: number;
+}
+
 export interface TaxonomyValue {
   id: string;
   label: string;

@@ -30,6 +30,7 @@ import {
   ArticleDoc,
   FrameworkDoc,
   TeamMemberDoc,
+  InternDoc,
   TaxonomyDoc,
   PageHomeDoc,
   PageAboutDoc,
@@ -44,6 +45,7 @@ import {
   SEED_ARTICLES,
   SEED_FRAMEWORKS,
   SEED_TEAM,
+  SEED_INTERNS,
   SEED_TAXONOMIES,
   SEED_PAGE_HOME,
   SEED_PAGE_ABOUT,
@@ -57,6 +59,7 @@ interface ContentState {
   articles: ArticleDoc[] | null;
   frameworks: FrameworkDoc[] | null;
   team: TeamMemberDoc[] | null;
+  interns: InternDoc[] | null;
   taxonomies: Record<string, TaxonomyDoc> | null;
   pageHome: PageHomeDoc | null;
   pageAbout: PageAboutDoc | null;
@@ -72,6 +75,7 @@ const EMPTY_STATE: ContentState = {
   articles: null,
   frameworks: null,
   team: null,
+  interns: null,
   taxonomies: null,
   pageHome: null,
   pageAbout: null,
@@ -106,6 +110,7 @@ const FETCHERS: { [K in ContentKey]: () => Promise<ContentState[K]> } = {
   articles: () => fetchPublished<ArticleDoc>('articles'),
   frameworks: () => fetchPublished<FrameworkDoc>('frameworks'),
   team: () => fetchAll<TeamMemberDoc>('team'),
+  interns: () => fetchAll<InternDoc>('interns'),
   taxonomies: () => fetchTaxonomies<TaxonomyDoc>(),
   pageHome: () => fetchSingleton<PageHomeDoc>('pages', 'home'),
   pageAbout: () => fetchSingleton<PageAboutDoc>('pages', 'about'),
@@ -184,6 +189,7 @@ function useContentKey<K extends ContentKey>(key: K, fallback: NonNullable<Conte
 export const useArticles = () => useContentKey('articles', SEED_ARTICLES);
 export const useFrameworks = () => useContentKey('frameworks', SEED_FRAMEWORKS);
 export const useTeam = () => useContentKey('team', SEED_TEAM);
+export const useInterns = () => useContentKey('interns', SEED_INTERNS);
 export const useTaxonomies = () => useContentKey('taxonomies', SEED_TAXONOMIES);
 export const usePageHome = () => useContentKey('pageHome', SEED_PAGE_HOME);
 export const usePageAbout = () => useContentKey('pageAbout', SEED_PAGE_ABOUT);

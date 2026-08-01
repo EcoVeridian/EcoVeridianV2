@@ -58,9 +58,9 @@ export async function fetchPublished<T extends { order?: number }>(
   }
 }
 
-/** All docs of a fully-public collection (team), sorted by `order`. */
+/** All docs of a fully-public collection (team, interns), sorted by `order`. */
 export async function fetchAll<T extends { order?: number }>(
-  collectionName: 'team',
+  collectionName: 'team' | 'interns',
 ): Promise<T[] | null> {
   const db = liteDb();
   if (!db) return null;

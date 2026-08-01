@@ -3,11 +3,13 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { useTeam } from '../content/ContentContext';
+import { useTeam, useInterns } from '../content/ContentContext';
 
 export default function TeamView() {
   const team = useTeam();
+  const interns = useInterns();
   const visibleMembers = team.filter((member) => member.visible);
+  const visibleInterns = interns.filter((intern) => intern.visible);
 
   return (
     <section className="w-full max-w-[1280px] mx-auto px-5 md:px-16 py-12 md:py-20 animate-fade-in">
@@ -64,6 +66,30 @@ export default function TeamView() {
           </article>
         ))}
       </div>
+
+      {visibleInterns.length > 0 && (
+        <div className="mt-16 md:mt-20 border-t-[0.5px] border-outline-variant pt-10">
+          <p className="font-mono text-[11px] md:text-xs uppercase tracking-[0.18em] text-on-surface-variant mb-4 font-semibold">
+            Interns
+          </p>
+          <h2 className="font-serif text-2xl md:text-3xl text-primary font-semibold mb-4">
+            Our Interns
+          </h2>
+          <p className="font-sans text-sm md:text-base text-on-surface-variant leading-relaxed max-w-[760px] mb-8">
+            Students contributing to EcoVeridian research, engineering, and design work.
+          </p>
+          <ul className="flex flex-wrap gap-2.5">
+            {visibleInterns.map((intern) => (
+              <li
+                key={intern.slug}
+                className="px-4 py-2.5 bg-surface-container-low border-[0.5px] border-outline-variant rounded-[2px] font-sans text-sm text-on-surface"
+              >
+                {intern.name}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </section>
   );
 }

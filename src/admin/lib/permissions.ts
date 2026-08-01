@@ -17,7 +17,7 @@ export const PERMISSION_INFO: Record<PermissionKey, { label: string; description
   },
   team: {
     label: 'Team',
-    description: 'Manage team member profiles on the Team page.',
+    description: 'Manage team member profiles and intern names on the Team page.',
   },
   taxonomies: {
     label: 'Taxonomies',

@@ -17,6 +17,7 @@ import { Loader2, AlertTriangle, Plus, ArrowUp, ArrowDown, Pencil, Trash2, Users
 import { adminDb } from '../../lib/firebaseAdmin';
 import { TeamMemberDoc } from '../../../types';
 import ConfirmDialog from '../../components/ConfirmDialog';
+import InternsPanel from './InternsPanel';
 
 type LoadState = { phase: 'loading' } | { phase: 'ready' } | { phase: 'error'; message: string };
 
@@ -186,6 +187,8 @@ export default function TeamList() {
           ))}
         </div>
       )}
+
+      <InternsPanel />
 
       <ConfirmDialog
         open={deleteTarget !== null}

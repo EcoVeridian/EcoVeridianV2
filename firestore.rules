@@ -72,6 +72,12 @@ service cloud.firestore {
       allow write: if hasPerm('team');
     }
 
+    // Name-only intern entries shown beneath the team on /team.
+    match /interns/{slug} {
+      allow read: if true;
+      allow write: if hasPerm('team');
+    }
+
     match /taxonomies/{taxonomyId} {
       allow read: if true;
       allow write: if hasPerm('taxonomies');
