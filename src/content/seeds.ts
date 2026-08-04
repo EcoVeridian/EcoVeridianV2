@@ -22,6 +22,7 @@ import {
   PageAboutDoc,
   PageInstitutionalDoc,
   PagePartnerDoc,
+  PageTeamDoc,
   SiteSettingsDoc,
   ThemeSettingsDoc,
   RoleDoc,
@@ -374,6 +375,15 @@ export const SEED_TEAM: TeamMemberDoc[] = [
 
 // Interns are added from /admin/team; there is no built-in list to fall back to.
 export const SEED_INTERNS: InternDoc[] = [];
+
+export const SEED_PAGE_TEAM: PageTeamDoc = {
+  kicker: 'Team',
+  heading: 'Meet the Team',
+  intro: 'The EcoVeridian team combines platform engineering, interface architecture, and product design to ship practical sustainability-focused tools.',
+  internsKicker: 'Interns',
+  internsHeading: 'Our Interns',
+  internsIntro: 'Students contributing to EcoVeridian research, engineering, and design work.',
+};
 
 export const SEED_TAXONOMIES: Record<string, TaxonomyDoc> = {
   disciplines: {

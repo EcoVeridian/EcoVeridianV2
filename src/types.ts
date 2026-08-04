@@ -211,6 +211,15 @@ export interface PagePartnerDoc {
   responseNote: string;
 }
 
+export interface PageTeamDoc {
+  kicker: string;
+  heading: string;
+  intro: string;
+  internsKicker: string;
+  internsHeading: string;
+  internsIntro: string;
+}
+
 export interface SiteSettingsDoc {
   contactEmail: string;
   formSubmitEmail: string;

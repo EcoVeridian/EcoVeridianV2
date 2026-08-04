@@ -3,11 +3,12 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { useTeam, useInterns } from '../content/ContentContext';
+import { useTeam, useInterns, usePageTeam } from '../content/ContentContext';
 
 export default function TeamView() {
   const team = useTeam();
   const interns = useInterns();
+  const page = usePageTeam();
   const visibleMembers = team.filter((member) => member.visible);
   const visibleInterns = interns.filter((intern) => intern.visible);
 
@@ -15,11 +16,11 @@ export default function TeamView() {
     <section className="w-full max-w-[1280px] mx-auto px-5 md:px-16 py-12 md:py-20 animate-fade-in">
       <div className="max-w-[760px] mb-12 md:mb-16 border-b-[0.5px] border-outline-variant pb-10">
         <p className="font-mono text-[11px] md:text-xs uppercase tracking-[0.18em] text-on-surface-variant mb-4 font-semibold">
-          Team
+          {page.kicker}
         </p>
-        <h1 className="font-serif text-4xl md:text-5xl font-bold text-primary mb-4">Meet the Team</h1>
+        <h1 className="font-serif text-4xl md:text-5xl font-bold text-primary mb-4">{page.heading}</h1>
         <p className="font-sans text-base md:text-lg text-on-surface-variant leading-relaxed">
-          The EcoVeridian team combines platform engineering, interface architecture, and product design to ship practical sustainability-focused tools.
+          {page.intro}
         </p>
       </div>
 
@@ -70,13 +71,13 @@ export default function TeamView() {
       {visibleInterns.length > 0 && (
         <div className="mt-16 md:mt-20 border-t-[0.5px] border-outline-variant pt-10">
           <p className="font-mono text-[11px] md:text-xs uppercase tracking-[0.18em] text-on-surface-variant mb-4 font-semibold">
-            Interns
+            {page.internsKicker}
           </p>
           <h2 className="font-serif text-2xl md:text-3xl text-primary font-semibold mb-4">
-            Our Interns
+            {page.internsHeading}
           </h2>
           <p className="font-sans text-sm md:text-base text-on-surface-variant leading-relaxed max-w-[760px] mb-8">
-            Students contributing to EcoVeridian research, engineering, and design work.
+            {page.internsIntro}
           </p>
           <ul className="flex flex-wrap gap-2.5">
             {visibleInterns.map((intern) => (

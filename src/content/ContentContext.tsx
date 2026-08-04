@@ -36,6 +36,7 @@ import {
   PageAboutDoc,
   PageInstitutionalDoc,
   PagePartnerDoc,
+  PageTeamDoc,
   SiteSettingsDoc,
   ThemeSettingsDoc,
 } from '../types';
@@ -51,6 +52,7 @@ import {
   SEED_PAGE_ABOUT,
   SEED_PAGE_INSTITUTIONAL,
   SEED_PAGE_PARTNER,
+  SEED_PAGE_TEAM,
   SEED_SITE_SETTINGS,
   SEED_THEME_SETTINGS,
 } from './seeds';
@@ -65,6 +67,7 @@ interface ContentState {
   pageAbout: PageAboutDoc | null;
   pageInstitutional: PageInstitutionalDoc | null;
   pagePartner: PagePartnerDoc | null;
+  pageTeam: PageTeamDoc | null;
   siteSettings: SiteSettingsDoc | null;
   themeSettings: ThemeSettingsDoc | null;
 }
@@ -81,6 +84,7 @@ const EMPTY_STATE: ContentState = {
   pageAbout: null,
   pageInstitutional: null,
   pagePartner: null,
+  pageTeam: null,
   siteSettings: null,
   themeSettings: null,
 };
@@ -116,6 +120,7 @@ const FETCHERS: { [K in ContentKey]: () => Promise<ContentState[K]> } = {
   pageAbout: () => fetchSingleton<PageAboutDoc>('pages', 'about'),
   pageInstitutional: () => fetchSingleton<PageInstitutionalDoc>('pages', 'institutional'),
   pagePartner: () => fetchSingleton<PagePartnerDoc>('pages', 'partner'),
+  pageTeam: () => fetchSingleton<PageTeamDoc>('pages', 'team'),
   siteSettings: () => fetchSingleton<SiteSettingsDoc>('settings', 'site'),
   themeSettings: () => fetchSingleton<ThemeSettingsDoc>('settings', 'theme'),
 };
@@ -195,5 +200,6 @@ export const usePageHome = () => useContentKey('pageHome', SEED_PAGE_HOME);
 export const usePageAbout = () => useContentKey('pageAbout', SEED_PAGE_ABOUT);
 export const usePageInstitutional = () => useContentKey('pageInstitutional', SEED_PAGE_INSTITUTIONAL);
 export const usePagePartner = () => useContentKey('pagePartner', SEED_PAGE_PARTNER);
+export const usePageTeam = () => useContentKey('pageTeam', SEED_PAGE_TEAM);
 export const useSiteSettings = () => useContentKey('siteSettings', SEED_SITE_SETTINGS);
 export const useThemeSettings = () => useContentKey('themeSettings', SEED_THEME_SETTINGS);

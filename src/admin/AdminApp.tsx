@@ -21,6 +21,7 @@ import Taxonomies from './screens/settings/Taxonomies';
 import PagesIndex from './screens/pages/PagesIndex';
 import HomeEdit from './screens/pages/HomeEdit';
 import AboutEdit from './screens/pages/AboutEdit';
+import TeamPageEdit from './screens/pages/TeamPageEdit';
 import InstitutionalEdit from './screens/pages/InstitutionalEdit';
 import PartnerEdit from './screens/pages/PartnerEdit';
 import SiteSettings from './screens/settings/SiteSettings';
@@ -48,6 +49,7 @@ export default function AdminApp() {
             <Route path="pages" element={<RequirePermission perm="pages"><PagesIndex /></RequirePermission>} />
             <Route path="pages/home" element={<RequirePermission perm="pages"><HomeEdit /></RequirePermission>} />
             <Route path="pages/about" element={<RequirePermission perm="pages"><AboutEdit /></RequirePermission>} />
+            <Route path="pages/team" element={<RequirePermission perm="pages"><TeamPageEdit /></RequirePermission>} />
             <Route path="pages/collaborate" element={<RequirePermission perm="pages"><InstitutionalEdit /></RequirePermission>} />
             <Route path="pages/partner" element={<RequirePermission perm="pages"><PartnerEdit /></RequirePermission>} />
             <Route path="settings" element={<RequirePermission perm="settings"><SiteSettings /></RequirePermission>} />

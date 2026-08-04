@@ -4,7 +4,7 @@
  */
 
 import { Link } from 'react-router-dom';
-import { Home, Users, Handshake, Mail, ArrowRight } from 'lucide-react';
+import { Home, Users, Handshake, Mail, ArrowRight, GraduationCap } from 'lucide-react';
 import { PanelsTopLeft } from 'lucide-react';
 
 interface PageCardConfig {
@@ -26,6 +26,12 @@ const CARDS: PageCardConfig[] = [
     icon: Users,
     title: 'About',
     description: 'Mission copy, approach pillars, and sidebar content for the About Us page.',
+  },
+  {
+    to: '/admin/pages/team',
+    icon: GraduationCap,
+    title: 'Team',
+    description: 'Heading and intro copy for the Team and Interns sections on /team.',
   },
   {
     to: '/admin/pages/collaborate',
