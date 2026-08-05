@@ -17,6 +17,7 @@ import {
   Tags,
   PanelsTopLeft,
   Inbox,
+  FolderOpen,
   Settings,
   Palette,
   Image,
@@ -27,6 +28,7 @@ import {
 import { PermissionKey } from '../types';
 import { useAuth } from './AuthContext';
 import { useUnreadInquiries } from './lib/useUnreadInquiries';
+import { useUnreadSubmissions } from './lib/useUnreadSubmissions';
 
 // Items with a perm are hidden from roles lacking it (rules enforce the same
 // permission server-side — hiding is just UX).
@@ -44,6 +46,7 @@ const NAV_ITEMS: Array<{
   { to: '/admin/pages', label: 'Pages', icon: PanelsTopLeft, end: false, perm: 'pages' },
   { to: '/admin/taxonomies', label: 'Taxonomies', icon: Tags, end: false, perm: 'taxonomies' },
   { to: '/admin/inquiries', label: 'Inquiries', icon: Inbox, end: false, perm: 'inquiries' },
+  { to: '/admin/submissions', label: 'Submissions', icon: FolderOpen, end: false, perm: 'submissions' },
   { to: '/admin/media', label: 'Media', icon: Image, end: false, perm: 'media' },
   { to: '/admin/settings', label: 'Site Settings', icon: Settings, end: false, perm: 'settings' },
   { to: '/admin/theme', label: 'Theme', icon: Palette, end: false, perm: 'settings' },
@@ -56,6 +59,7 @@ export default function AdminLayout() {
   const { admin, can, signOutUser } = useAuth();
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const unreadCount = useUnreadInquiries();
+  const unreadSubmissionsCount = useUnreadSubmissions();
   const visibleItems = NAV_ITEMS.filter((item) => !item.perm || can(item.perm));
 
   const navLinks = (
@@ -81,6 +85,11 @@ export default function AdminLayout() {
             {item.to === '/admin/inquiries' && unreadCount > 0 && (
               <span className="bg-secondary text-on-secondary rounded-full px-1.5 text-[10px] font-bold ml-auto">
                 {unreadCount}
+              </span>
+            )}
+            {item.to === '/admin/submissions' && unreadSubmissionsCount > 0 && (
+              <span className="bg-secondary text-on-secondary rounded-full px-1.5 text-[10px] font-bold ml-auto">
+                {unreadSubmissionsCount}
               </span>
             )}
           </NavLink>

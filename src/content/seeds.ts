@@ -534,6 +534,8 @@ export const SEED_PAGE_PARTNER: PagePartnerDoc = {
 export const SEED_SITE_SETTINGS: SiteSettingsDoc = {
   contactEmail: 'ecoveridian@gmail.com',
   formSubmitEmail: 'ecoveridian@gmail.com',
+  cloudinaryCloudName: 'ovkbkizj',
+  cloudinaryUploadPreset: 'ecoveridian',
   socials: [
     { label: 'Instagram', url: 'https://www.instagram.com/ecoveridian' },
     { label: 'GitHub', url: 'https://github.com/EcoVeridian' },
@@ -577,6 +579,7 @@ export const SEED_ROLES: Record<string, RoleDoc> = {
       pages: true,
       settings: true,
       inquiries: true,
+      submissions: true,
       media: true,
       users: true,
     },
@@ -594,6 +597,7 @@ export const SEED_ROLES: Record<string, RoleDoc> = {
       pages: true,
       settings: false,
       inquiries: true,
+      submissions: true,
       media: true,
       users: false,
     },

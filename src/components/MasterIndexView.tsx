@@ -4,10 +4,10 @@
  */
 
 import React, { useState, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { FrameworkDoc } from '../types';
 import { useFrameworks, useTaxonomies } from '../content/ContentContext';
-import { Download, Search, SlidersHorizontal, Check, RefreshCw, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Download, Search, SlidersHorizontal, Check, RefreshCw, ChevronLeft, ChevronRight, UploadCloud } from 'lucide-react';
 
 const badgeTags: Record<string, string> = {
   Verified: 'bg-primary-fixed text-on-primary-fixed border border-primary/10',
@@ -262,9 +262,19 @@ export default function MasterIndexView() {
 
         {/* Header Block */}
         <header className="mb-10">
-          <h1 className="font-serif text-3xl md:text-4xl lg:text-5xl text-primary font-bold mb-4 leading-tight">
-            Resource Hub
-          </h1>
+          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-4">
+            <h1 className="font-serif text-3xl md:text-4xl lg:text-5xl text-primary font-bold leading-tight">
+              Resource Hub
+            </h1>
+            <Link
+              to="/resources/submit"
+              className="inline-flex items-center gap-2 py-2.5 px-5 bg-primary text-on-primary font-mono text-xs uppercase tracking-widest font-semibold rounded-[2px] hover:bg-primary-container transition-colors cursor-pointer flex-shrink-0 self-start"
+              id="submit-project-link"
+            >
+              <UploadCloud className="w-4 h-4 stroke-[1.5]" />
+              Submit Your Journal or Project
+            </Link>
+          </div>
           <p className="font-sans text-base md:text-lg text-on-surface-variant max-w-3xl leading-relaxed">
             Browse our verified research outputs, dataset summaries, and reproducible methods. This page is structured to scale as EcoVeridian publishes more partner-ready work.
           </p>

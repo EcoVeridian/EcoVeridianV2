@@ -223,6 +223,10 @@ export interface PageTeamDoc {
 export interface SiteSettingsDoc {
   contactEmail: string;
   formSubmitEmail: string;
+  // Unsigned upload target for visitor-submitted files (see SubmitProjectView) —
+  // create a free Cloudinary account and an unsigned upload preset to fill these in.
+  cloudinaryCloudName: string;
+  cloudinaryUploadPreset: string;
   socials: Array<{ label: string; url: string }>;
   footerTagline: string;
   copyright: string;
@@ -249,6 +253,23 @@ export interface InquiryDoc {
   createdAt: unknown; // Firestore Timestamp
 }
 
+export type SubmissionStatus = 'unread' | 'read' | 'archived';
+
+// A visitor-submitted journal/project, filed from the Resource Hub. The file
+// is uploaded client-side to Cloudinary (fileUrl) for in-admin download, and
+// also emailed as an attachment via FormSubmit for immediate notification.
+export interface SubmissionDoc {
+  name: string;
+  email: string;
+  organization: string;
+  title: string;
+  description: string;
+  fileUrl: string;
+  fileName: string;
+  status: SubmissionStatus;
+  createdAt: unknown; // Firestore Timestamp
+}
+
 /**
  * Granular admin capabilities. Enforced in three layers: firestore.rules,
  * storage.rules (media), and the admin UI. Adding a key here requires adding
@@ -262,6 +283,7 @@ export type PermissionKey =
   | 'pages' // edit page copy (home, about, collaborate, partner)
   | 'settings' // site settings + theme
   | 'inquiries' // read and manage the inquiry inbox
+  | 'submissions' // read and manage visitor project/journal submissions
   | 'media' // upload/delete files in the media library
   | 'users'; // manage admins, invites, and roles (effectively full control)
 
@@ -273,6 +295,7 @@ export const ALL_PERMISSIONS: PermissionKey[] = [
   'pages',
   'settings',
   'inquiries',
+  'submissions',
   'media',
   'users',
 ];

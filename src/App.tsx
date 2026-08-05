@@ -13,6 +13,7 @@ import ArticleReader from './components/ArticleReader';
 import MasterIndexView from './components/MasterIndexView';
 import FrameworkDrawer from './components/FrameworkDrawer';
 import SubmissionView from './components/SubmissionView';
+import SubmitProjectView from './components/SubmitProjectView';
 import InstitutionalAccessView from './components/InstitutionalAccessView';
 import TeamView from './components/TeamView';
 import AboutView from './components/AboutView';
@@ -114,6 +115,14 @@ function PartnerRoute() {
   return <SubmissionView />;
 }
 
+function SubmitProjectRoute() {
+  useMeta(
+    'Submit Your Work · EcoVeridian',
+    'Submit your research journal or project to EcoVeridian for review — attach a PDF, document, or any other format.',
+  );
+  return <SubmitProjectView />;
+}
+
 function CollaborateRoute() {
   useMeta(
     'Ways to Work With Us · EcoVeridian',
@@ -148,6 +157,7 @@ function PublicShell() {
         <Routes>
           <Route path="/" element={<HomeRoute />} />
           <Route path="/articles/:articleId" element={<ArticleRoute />} />
+          <Route path="/resources/submit" element={<SubmitProjectRoute />} />
           <Route path="/resources/:frameworkId?" element={<ResourcesRoute />} />
           <Route path="/partner" element={<PartnerRoute />} />
           <Route path="/collaborate" element={<CollaborateRoute />} />

@@ -35,6 +35,10 @@ export const PERMISSION_INFO: Record<PermissionKey, { label: string; description
     label: 'Inquiries',
     description: 'Read and manage the partner inquiry inbox (contains visitor contact details).',
   },
+  submissions: {
+    label: 'Submissions',
+    description: 'Read and manage visitor journal/project submissions from the Resource Hub.',
+  },
   media: {
     label: 'Media',
     description: 'Upload and delete files in the media library.',

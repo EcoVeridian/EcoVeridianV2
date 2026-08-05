@@ -123,7 +123,11 @@ export default function SiteSettings() {
         const db = adminDb();
         const snap = await getDoc(doc(db, 'settings', 'site'));
         if (cancelled) return;
-        const data = snap.exists() ? (snap.data() as SiteSettingsDoc) : SEED_SITE_SETTINGS;
+        // Merge so fields added after a doc was first saved (e.g. Cloudinary
+        // config) fall back to the seed default instead of showing blank.
+        const data = snap.exists()
+          ? { ...SEED_SITE_SETTINGS, ...(snap.data() as SiteSettingsDoc) }
+          : SEED_SITE_SETTINGS;
         setLoaded(data);
         setForm(data);
         setState({ phase: 'ready' });
@@ -209,6 +213,22 @@ export default function SiteSettings() {
             value={form.formSubmitEmail}
             onChange={(v) => update('formSubmitEmail', v)}
             hint="Inquiries are emailed here via FormSubmit"
+          />
+        </section>
+
+        <section className="flex flex-col gap-6">
+          <h2 className="font-serif text-xl font-bold text-primary">Resource Hub Uploads</h2>
+          <Field
+            label="Cloudinary Cloud Name"
+            value={form.cloudinaryCloudName}
+            onChange={(v) => update('cloudinaryCloudName', v)}
+            hint="From your Cloudinary Dashboard. Required for the Submit Your Journal/Project form to accept file uploads."
+          />
+          <Field
+            label="Cloudinary Unsigned Upload Preset"
+            value={form.cloudinaryUploadPreset}
+            onChange={(v) => update('cloudinaryUploadPreset', v)}
+            hint="Settings -> Upload -> Upload presets -> Add upload preset, with Signing Mode set to Unsigned"
           />
         </section>
 

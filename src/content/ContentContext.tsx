@@ -201,5 +201,5 @@ export const usePageAbout = () => useContentKey('pageAbout', SEED_PAGE_ABOUT);
 export const usePageInstitutional = () => useContentKey('pageInstitutional', SEED_PAGE_INSTITUTIONAL);
 export const usePagePartner = () => useContentKey('pagePartner', SEED_PAGE_PARTNER);
 export const usePageTeam = () => useContentKey('pageTeam', SEED_PAGE_TEAM);
-export const useSiteSettings = () => useContentKey('siteSettings', SEED_SITE_SETTINGS);
+export const useSiteSettings = () => ({ ...SEED_SITE_SETTINGS, ...useContentKey('siteSettings', SEED_SITE_SETTINGS) });
 export const useThemeSettings = () => useContentKey('themeSettings', SEED_THEME_SETTINGS);

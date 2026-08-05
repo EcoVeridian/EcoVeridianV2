@@ -27,6 +27,7 @@ import PartnerEdit from './screens/pages/PartnerEdit';
 import SiteSettings from './screens/settings/SiteSettings';
 import ThemeSettings from './screens/settings/ThemeSettings';
 import Inbox from './screens/inquiries/Inbox';
+import SubmissionsInbox from './screens/submissions/SubmissionsInbox';
 import MediaLibrary from './screens/media/MediaLibrary';
 import AdminUsers from './screens/users/AdminUsers';
 import Roles from './screens/users/Roles';
@@ -55,6 +56,7 @@ export default function AdminApp() {
             <Route path="settings" element={<RequirePermission perm="settings"><SiteSettings /></RequirePermission>} />
             <Route path="theme" element={<RequirePermission perm="settings"><ThemeSettings /></RequirePermission>} />
             <Route path="inquiries" element={<RequirePermission perm="inquiries"><Inbox /></RequirePermission>} />
+            <Route path="submissions" element={<RequirePermission perm="submissions"><SubmissionsInbox /></RequirePermission>} />
             <Route path="media" element={<RequirePermission perm="media"><MediaLibrary /></RequirePermission>} />
             {/* AdminUsers renders read-only without the users permission. */}
             <Route path="users" element={<AdminUsers />} />

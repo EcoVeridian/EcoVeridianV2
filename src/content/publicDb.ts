@@ -131,3 +131,33 @@ export async function fetchSingleton<T>(
     return null;
   }
 }
+
+/**
+ * File a Resource Hub project/journal submission's review-queue metadata.
+ * The file is uploaded client-side to Cloudinary before this is called (see
+ * SubmitProjectView) — the doc shape must match the strict create rule in
+ * firestore.rules exactly. Returns the new doc's id on success.
+ */
+export async function submitProjectSubmission(data: {
+  name: string;
+  email: string;
+  organization: string;
+  title: string;
+  description: string;
+  fileUrl: string;
+  fileName: string;
+}): Promise<string | null> {
+  const db = liteDb();
+  if (!db) return null;
+  try {
+    const ref = await addDoc(collection(db, 'submissions'), {
+      ...data,
+      status: 'unread',
+      createdAt: serverTimestamp(),
+    });
+    return ref.id;
+  } catch (err) {
+    warn('submissions (create)', err);
+    return null;
+  }
+}
