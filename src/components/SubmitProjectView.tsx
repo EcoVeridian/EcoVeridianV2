@@ -50,7 +50,10 @@ export default function SubmitProjectView() {
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     const { name, value } = e.target;
-    setForm((prev) => ({ ...prev, [name]: value }));
+    // Field `name` attributes are capitalized for the FormSubmit email table;
+    // lowercase the first letter to get the matching state key.
+    const key = name.charAt(0).toLowerCase() + name.slice(1);
+    setForm((prev) => ({ ...prev, [key]: value }));
   };
 
   const handleFileChange = (selected: File | null) => {
@@ -227,7 +230,7 @@ export default function SubmitProjectView() {
                     </label>
                     <input
                       type="text"
-                      name="name"
+                      name="Name"
                       id="name"
                       value={form.name}
                       onChange={handleInputChange}
@@ -242,7 +245,7 @@ export default function SubmitProjectView() {
                     </label>
                     <input
                       type="text"
-                      name="organization"
+                      name="Organization"
                       id="organization"
                       value={form.organization}
                       onChange={handleInputChange}
@@ -258,7 +261,7 @@ export default function SubmitProjectView() {
                   </label>
                   <input
                     type="email"
-                    name="email"
+                    name="Email"
                     id="email"
                     value={form.email}
                     onChange={handleInputChange}
@@ -274,7 +277,7 @@ export default function SubmitProjectView() {
                   </label>
                   <input
                     type="text"
-                    name="title"
+                    name="Title"
                     id="title"
                     value={form.title}
                     onChange={handleInputChange}
@@ -289,7 +292,7 @@ export default function SubmitProjectView() {
                     Description
                   </label>
                   <textarea
-                    name="description"
+                    name="Description"
                     id="description"
                     value={form.description}
                     onChange={handleInputChange}
@@ -338,7 +341,7 @@ export default function SubmitProjectView() {
                   <input
                     ref={fileInputRef}
                     type="file"
-                    name="attachment"
+                    name="Attachment"
                     className="hidden"
                     onChange={(e) => handleFileChange(e.target.files?.[0] ?? null)}
                   />
@@ -355,7 +358,7 @@ export default function SubmitProjectView() {
                   <label htmlFor="website">Website</label>
                   <input
                     type="text"
-                    name="website"
+                    name="_honeypot"
                     id="website"
                     value={website}
                     onChange={(e) => setWebsite(e.target.value)}
